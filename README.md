@@ -346,5 +346,5 @@ python main.py
 中国区联系邮箱. 
 <maishanemail@qq.com>
 
-友链.
-<https://linux.do/>
+友链.linux.do
+<https://linux.do>
