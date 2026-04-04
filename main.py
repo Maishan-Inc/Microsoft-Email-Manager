@@ -951,8 +951,34 @@ def request_uses_https(request: Request | None) -> bool:
     return request.url.scheme == "https"
 
 
+def get_request_public_base_url(request: Request) -> str:
+    forwarded_proto = request.headers.get("X-Forwarded-Proto", "")
+    forwarded_host = request.headers.get("X-Forwarded-Host", "")
+    forwarded_prefix = request.headers.get("X-Forwarded-Prefix", "")
+    host = ""
+
+    if forwarded_host:
+        host = forwarded_host.split(",")[0].strip()
+    elif request.headers.get("host"):
+        host = request.headers["host"].strip()
+    else:
+        host = request.url.netloc
+
+    scheme = request.url.scheme
+    if forwarded_proto:
+        scheme = forwarded_proto.split(",")[0].strip().lower() or scheme
+
+    prefix = ""
+    if forwarded_prefix:
+        prefix = "/" + forwarded_prefix.split(",")[0].strip().strip("/")
+        if prefix == "/":
+            prefix = ""
+
+    return f"{scheme}://{host}{prefix}".rstrip("/")
+
+
 def build_public_share_url(request: Request, email_id: str) -> str:
-    base_url = str(request.base_url).rstrip("/")
+    base_url = get_request_public_base_url(request)
     return f"{base_url}/open/emails/{quote(email_id, safe='')}"
 
 
