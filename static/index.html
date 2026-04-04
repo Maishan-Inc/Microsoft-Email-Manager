@@ -1559,7 +1559,7 @@
             border-radius: 18px;
             width: 100%;
             min-height: 58px;
-            padding: 0 18px;
+            padding: 0 14px;
             color: rgba(226, 232, 240, 0.84);
             font-weight: 600;
             position: relative;
@@ -1593,9 +1593,9 @@
         }
 
         .nav-item.active {
-            background: linear-gradient(135deg, rgba(37, 99, 235, 0.9), rgba(14, 165, 233, 0.8));
+            background: rgba(255, 255, 255, 0.08);
             color: #ffffff;
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 16px 28px rgba(37, 99, 235, 0.3);
+            box-shadow: none;
         }
 
         .sidebar-footer {
@@ -1617,13 +1617,16 @@
 
         .sidebar-utility,
         .sidebar-toggle {
+            width: 46px;
+            min-width: 46px;
+            height: 46px;
             min-height: 46px;
-            border-radius: 18px;
+            border-radius: 16px;
             display: flex;
             align-items: center;
-            gap: 14px;
-            padding: 0 14px;
-            justify-content: flex-start;
+            gap: 0;
+            padding: 0;
+            justify-content: center;
             background: rgba(255, 255, 255, 0.06);
             color: rgba(241, 245, 249, 0.9);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -1639,13 +1642,19 @@
         }
 
         .sidebar-back-item {
-            background: rgba(37, 99, 235, 0.12);
-            color: #dbeafe;
-            border: 1px solid rgba(96, 165, 250, 0.24);
+            background: transparent;
+            color: rgba(226, 232, 240, 0.74);
+            border: none;
+            box-shadow: none;
         }
 
         .sidebar-back-item:hover {
-            background: rgba(37, 99, 235, 0.18);
+            background: transparent;
+            color: rgba(226, 232, 240, 0.74);
+        }
+
+        .sidebar-back-item::before {
+            display: none;
         }
 
         .sidebar-utility .ui-icon,
@@ -1670,6 +1679,7 @@
 
         .sidebar-utility-label {
             white-space: nowrap;
+            display: none;
         }
 
         .nav-item-text {
@@ -1680,7 +1690,7 @@
         }
 
         .sidebar-toggle {
-            width: 100%;
+            width: 46px;
             margin-top: 0;
         }
 
@@ -1699,10 +1709,11 @@
         }
 
         .sidebar.is-collapsed .sidebar-brand-main {
-            width: 100%;
+            width: auto;
             flex-direction: column;
             justify-content: center;
             gap: 12px;
+            align-items: center;
         }
 
         .sidebar.is-collapsed .sidebar-logo {
@@ -1714,6 +1725,7 @@
         .sidebar.is-collapsed .sidebar-title-stack,
         .sidebar.is-collapsed .nav-item-text,
         .sidebar.is-collapsed .sidebar-utility-label {
+            display: none;
             opacity: 0;
             width: 0;
             max-width: 0;
@@ -1729,8 +1741,15 @@
         .sidebar.is-collapsed .nav-item,
         .sidebar.is-collapsed .sidebar-utility,
         .sidebar.is-collapsed .sidebar-toggle {
-            justify-content: flex-start;
-            padding-inline: 18px;
+            justify-content: center;
+            padding-inline: 0;
+        }
+
+        .sidebar.is-collapsed .nav-item {
+            width: 58px;
+            min-width: 58px;
+            height: 58px;
+            margin: 0 auto;
         }
 
         .sidebar.is-collapsed .sidebar-footer {
@@ -1936,11 +1955,19 @@
         }
 
         #emailsPage .search-container {
-            display: grid;
-            grid-template-columns: 44px minmax(0, 1fr);
-            gap: 14px;
-            align-items: center;
-            padding: 16px 18px;
+            width: 56px;
+            min-height: 56px;
+            margin: 0 auto 18px;
+            padding: 8px;
+            overflow: hidden;
+            border-radius: 999px;
+            transition: width 0.36s cubic-bezier(0.22, 1, 0.36, 1), padding 0.36s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.28s ease, border-color 0.28s ease;
+        }
+
+        #emailsPage .search-container.is-expanded {
+            width: min(100%, 720px);
+            padding: 8px 16px 8px 8px;
+            box-shadow: 0 18px 34px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.72);
         }
 
         .search-icon {
@@ -1966,6 +1993,46 @@
 
         .search-input:focus {
             box-shadow: none;
+        }
+
+        .email-search-toggle {
+            border: none;
+            cursor: pointer;
+            transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), background 0.2s ease, color 0.2s ease;
+        }
+
+        #emailsPage .search-container:not(.is-expanded) .email-search-toggle {
+            margin: 0 auto;
+        }
+
+        #emailsPage .search-container.is-expanded .email-search-toggle {
+            margin: 0;
+            transform: translateX(0);
+        }
+
+        .email-search-input-wrap {
+            max-width: 0;
+            opacity: 0;
+            overflow: hidden;
+            transform: translateX(18px);
+            transition: max-width 0.36s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.18s ease, transform 0.24s ease;
+        }
+
+        #emailsPage .search-container.is-expanded .email-search-input-wrap {
+            max-width: 100%;
+            flex: 1;
+            opacity: 1;
+            transform: translateX(0);
+            transition-delay: 0.12s, 0.12s, 0.12s;
+        }
+
+        #emailsPage .search-container .search-input::placeholder {
+            color: transparent;
+            transition: color 0.18s ease;
+        }
+
+        #emailsPage .search-container.is-expanded .search-input::placeholder {
+            color: #94a3b8;
         }
 
         .filter-container {
@@ -1999,7 +2066,22 @@
         }
 
         .filter-group-range {
+            flex: 0 0 0;
+            min-width: 0;
+            max-width: 0;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transform: translateY(-10px);
+            transition: flex-basis 0.34s cubic-bezier(0.22, 1, 0.36, 1), max-width 0.34s cubic-bezier(0.22, 1, 0.36, 1), max-height 0.34s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease, transform 0.26s ease;
+        }
+
+        .filter-group-range.is-active {
             flex: 1.4 1 320px;
+            max-width: 420px;
+            max-height: 120px;
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .date-range-inputs {
@@ -2213,6 +2295,47 @@
             color: var(--ui-warning);
         }
 
+        .email-account-header {
+            display: grid;
+            gap: 12px;
+            min-width: min(420px, 100%);
+        }
+
+        .email-account-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .email-account-pill {
+            display: inline-flex;
+            align-items: center;
+            min-height: 38px;
+            padding: 0 14px;
+            border-radius: 999px;
+            background: rgba(37, 99, 235, 0.08);
+            color: #2563eb !important;
+        }
+
+        .email-account-switcher {
+            display: grid;
+            gap: 8px;
+            max-width: 360px;
+        }
+
+        .email-account-switcher-label {
+            font-size: 0.74rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--ui-text-soft);
+        }
+
+        .email-account-select {
+            min-height: 42px;
+        }
+
         .pagination {
             gap: 14px;
             margin-top: 24px;
@@ -2379,20 +2502,38 @@
         }
 
         .nav-item .icon {
-            width: 38px;
-            height: 38px;
+            width: 58px;
+            height: 58px;
             margin-right: 0;
-            border-radius: 12px;
+            border-radius: 18px;
             background: rgba(255, 255, 255, 0.08);
             color: inherit;
             position: relative;
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0;
         }
 
         .nav-item.active .icon {
             background: rgba(255, 255, 255, 0.16);
+        }
+
+        .sidebar-back-item .icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            background: transparent;
+        }
+
+        .sidebar-back-item:focus,
+        .sidebar-back-item:focus-visible {
+            outline: none;
+            box-shadow: none;
+        }
+
+        .mobile-nav-item {
+            display: none;
         }
 
         .btn .ui-icon {
@@ -2492,23 +2633,41 @@
             .sidebar-nav {
                 flex-direction: row;
                 padding: 14px;
+                gap: 10px;
+                overflow-x: auto;
+                overflow-y: hidden;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+                scroll-behavior: smooth;
+            }
+
+            .sidebar-nav::-webkit-scrollbar {
+                display: none;
             }
 
             .nav-item {
-                min-width: max-content;
+                min-width: 58px;
+                width: 58px;
+                min-height: 58px;
+                padding: 0;
+                justify-content: center;
+                flex: 0 0 auto;
             }
 
             .nav-item-text {
-                display: inline;
+                display: none;
             }
 
             .sidebar-footer {
-                flex-direction: row;
-                padding: 14px;
+                display: none;
             }
 
             .sidebar-footer-divider {
                 display: none;
+            }
+
+            .mobile-nav-item {
+                display: inline-flex;
             }
 
             .sidebar.is-collapsed .sidebar-title-stack,
@@ -2535,8 +2694,8 @@
             .sidebar.is-collapsed .nav-item,
             .sidebar.is-collapsed .sidebar-utility,
             .sidebar.is-collapsed .sidebar-toggle {
-                justify-content: flex-start;
-                padding-inline: 14px;
+                justify-content: center;
+                padding-inline: 0;
             }
 
             .main-header {
@@ -2554,11 +2713,26 @@
             }
 
             #emailsPage .search-container {
-                grid-template-columns: 1fr;
+                width: 100%;
+                min-height: 52px;
+                margin-inline: 0;
+                padding: 8px 14px;
             }
 
-            #emailsPage .search-icon {
-                display: none;
+            #emailsPage .search-container,
+            #emailsPage .search-container.is-expanded {
+                width: 100%;
+            }
+
+            #emailsPage .search-container .email-search-input-wrap {
+                max-width: 100%;
+                flex: 1;
+                opacity: 1;
+                transform: none;
+            }
+
+            #emailsPage .search-container .search-input::placeholder {
+                color: #94a3b8;
             }
 
             #emailsPage .filter-group,
@@ -2590,6 +2764,27 @@
             .notification {
                 min-width: 0;
                 width: calc(100vw - 32px);
+            }
+
+            .btn,
+            .btn-sm {
+                min-height: 34px;
+                padding: 7px 10px;
+                font-size: 0.76rem;
+                gap: 6px;
+            }
+
+            .copy-icon {
+                width: 24px;
+                height: 24px;
+            }
+
+            .email-account-header {
+                min-width: 0;
+            }
+
+            .email-account-switcher {
+                max-width: none;
             }
         }
 
@@ -3228,6 +3423,10 @@
                     <span class="icon"></span>
                     <span class="nav-item-text">API 文档</span>
                 </button>
+                <button id="mobileLogoutBtn" class="nav-item mobile-nav-item" type="button" onclick="logout()" data-tooltip="退出登录" aria-label="退出登录">
+                    <span class="icon"></span>
+                    <span class="nav-item-text">退出登录</span>
+                </button>
                 <button class="nav-item nav-item-hidden" type="button" data-page="emails" onclick="showPage('emails', this)" oncontextmenu="showEmailsContextMenu(event)" id="emailsNav" style="display: none;">
                     <span class="icon"></span>
                     <span class="nav-item-text">邮件列表</span>
@@ -3833,15 +4032,22 @@ example3@outlook.com----password3----refresh_token3----client_id3"></textarea>
                     <div class="card">
                         <!-- 璐︽埛淇℃伅鍜屾搷浣滄寜閽?-->
                         <div class="flex items-center justify-between mb-4">
-                            <div>
-                                <h3 class="font-semibold">当前账户：                                    <span id="currentAccountEmail"
-                                          class="text-sm font-medium email-copyable"
-                                          style="color: #3b82f6; cursor: pointer; position: relative;"
+                            <div class="email-account-header">
+                                <h3 class="font-semibold">当前账户</h3>
+                                <div class="email-account-toolbar">
+                                    <span id="currentAccountEmail"
+                                          class="text-sm font-medium email-copyable email-account-pill"
                                           onclick="copyEmailAddress(this.textContent)"
                                           title="点击复制邮箱地址">
                                     </span>
                                     <span class="copy-icon" style="margin-left: 6px; opacity: 0.6; font-size: 0.8em;">馃搵</span>
-                                </h3>
+                                </div>
+                                <div class="email-account-switcher">
+                                    <label class="email-account-switcher-label" for="currentAccountSelect">快速切换账户</label>
+                                    <select id="currentAccountSelect" class="form-input email-account-select" onchange="switchCurrentAccount(this.value)">
+                                        <option value="">请选择账户</option>
+                                    </select>
+                                </div>
                                 <p class="text-sm" style="color: #64748b;">最后更新：<span id="lastUpdateTime">-</span></p>
                             </div>
                             <div class="flex gap-2">
@@ -3885,9 +4091,13 @@ example3@outlook.com----password3----refresh_token3----client_id3"></textarea>
                         </div>
 
                         <!-- 搜索和过滤 -->
-                        <div class="search-container">
-                            <span class="search-icon">馃攳</span>
-                            <input type="text" class="search-input" id="mailSearchInput" placeholder="搜索邮件主题、发件人或内容..." onkeyup="searchEmails()">
+                        <div class="search-container email-search-shell" id="emailSearchShell">
+                            <button type="button" class="search-icon email-search-toggle" id="emailSearchToggle" onclick="toggleEmailSearch(true)" aria-label="展开搜索">
+                                馃攳
+                            </button>
+                            <div class="email-search-input-wrap">
+                                <input type="text" class="search-input" id="mailSearchInput" placeholder="搜索邮件主题、发件人或内容..." onfocus="toggleEmailSearch(true)" onblur="handleEmailSearchBlur()" onkeyup="searchEmails()">
+                            </div>
                         </div>
 
                         <div class="filter-container email-filter-grid">
@@ -3928,7 +4138,7 @@ example3@outlook.com----password3----refresh_token3----client_id3"></textarea>
                                     <option value="without">无附件</option>
                                 </select>
                             </div>
-                            <div id="customDateRange" class="filter-group filter-group-range hidden">
+                            <div id="customDateRange" class="filter-group filter-group-range">
                                 <label class="filter-label">自定义时间</label>
                                 <div class="date-range-inputs">
                                     <input type="date" class="filter-select filter-date-input" id="dateFromFilter" onchange="applyFilters()">
@@ -4133,13 +4343,54 @@ example3@outlook.com----password3----refresh_token3----client_id3"></textarea>
             if (backButton) {
                 backButton.classList.toggle('hidden', pageName !== 'emails');
             }
+
+            if (window.innerWidth <= 768) {
+                const mobileTarget = pageName === 'emails' ? document.getElementById('accountsNav') : activeButton;
+                if (mobileTarget) {
+                    requestAnimationFrame(() => {
+                        mobileTarget.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'nearest',
+                            inline: 'center'
+                        });
+                    });
+                }
+            }
         }
 
         function toggleCustomDateRange() {
             const timeFilter = document.getElementById('timeFilter');
             const rangeWrap = document.getElementById('customDateRange');
             if (!timeFilter || !rangeWrap) return;
-            rangeWrap.classList.toggle('hidden', timeFilter.value !== 'custom');
+            rangeWrap.classList.toggle('is-active', timeFilter.value === 'custom');
+        }
+
+        function toggleEmailSearch(forceExpand = null) {
+            const searchShell = document.getElementById('emailSearchShell');
+            const searchInput = document.getElementById('mailSearchInput');
+            if (!searchShell || !searchInput) return;
+            if (window.innerWidth <= 768) {
+                searchShell.classList.add('is-expanded');
+                return;
+            }
+
+            const shouldExpand = typeof forceExpand === 'boolean'
+                ? forceExpand
+                : !searchShell.classList.contains('is-expanded');
+
+            searchShell.classList.toggle('is-expanded', shouldExpand);
+            if (shouldExpand) {
+                window.setTimeout(() => searchInput.focus(), 180);
+            }
+        }
+
+        function handleEmailSearchBlur() {
+            const searchShell = document.getElementById('emailSearchShell');
+            const searchInput = document.getElementById('mailSearchInput');
+            if (!searchShell || !searchInput || window.innerWidth <= 768) return;
+            if (!searchInput.value.trim()) {
+                searchShell.classList.remove('is-expanded');
+            }
         }
 
         async function fetchAuthState() {
@@ -4249,7 +4500,7 @@ example3@outlook.com----password3----refresh_token3----client_id3"></textarea>
                 decorateStaticUi();
                 handleUrlRouting();
 
-                if (!window.location.hash || window.location.hash === '#') {
+                if ((!window.location.hash || window.location.hash === '#') && document.getElementById('accountsPage').classList.contains('hidden')) {
                     showPage('accounts');
                 }
 
@@ -4414,10 +4665,13 @@ example3@outlook.com----password3----refresh_token3----client_id3"></textarea>
                 setButtonIcon(backButton, 'arrow-left', true);
             }
 
+            setButtonIcon(document.getElementById('mobileLogoutBtn'), 'logout', true);
+
             setButtonIcon(document.getElementById('sidebarToggle'), 'arrow-left');
             setButtonIcon(document.getElementById('logoutBtn'), 'logout');
             applySidebarState(readSidebarState());
             toggleCustomDateRange();
+            toggleEmailSearch(window.innerWidth <= 768);
 
             setButtonIcon(document.querySelector('#accountsPage .btn-primary.btn-sm[onclick="showPage(\'addAccount\')"]'), 'plus');
             setButtonIcon(document.querySelector('#accountsPage .btn-secondary.btn-sm[onclick="showPage(\'batchAdd\')"]'), 'batch');
@@ -4453,6 +4707,11 @@ example3@outlook.com----password3----refresh_token3----client_id3"></textarea>
             const searchIcon = document.querySelector('#emailsPage .search-icon');
             if (searchIcon) {
                 searchIcon.innerHTML = icon('search');
+            }
+
+            const searchToggle = document.getElementById('emailSearchToggle');
+            if (searchToggle) {
+                searchToggle.innerHTML = icon('search');
             }
 
             const copyIcon = document.querySelector('.copy-icon');
@@ -4523,6 +4782,7 @@ example3@outlook.com----password3----refresh_token3----client_id3"></textarea>
             } else if (pageName === 'apiDocs') {
                 initApiDocs();
             } else if (pageName === 'emails') {
+                populateAccountSwitcher(currentAccount);
                 loadEmails();
             }
         }
@@ -5513,16 +5773,75 @@ Authorization: Bearer om_your_api_key
         let filteredEmails = [];
         let searchTimeout = null;
 
+        function updateCurrentAccountHeader(accountId = currentAccount) {
+            const accountLabel = document.getElementById('currentAccountEmail');
+            const accountSelect = document.getElementById('currentAccountSelect');
+            if (accountLabel) {
+                accountLabel.textContent = accountId || '';
+            }
+            if (accountSelect && accountId) {
+                accountSelect.value = accountId;
+            }
+        }
+
+        async function populateAccountSwitcher(selectedAccount = currentAccount) {
+            const accountSelect = document.getElementById('currentAccountSelect');
+            if (!accountSelect) return;
+
+            let optionAccounts = Array.isArray(accounts) ? [...accounts] : [];
+            try {
+                const response = await apiRequest('/accounts?page=1&page_size=500');
+                optionAccounts = response.accounts || optionAccounts;
+            } catch (error) {
+                console.warn('Unable to refresh account switcher options', error);
+            }
+
+            const uniqueAccounts = [];
+            const seen = new Set();
+            optionAccounts.forEach(account => {
+                const emailId = account && account.email_id;
+                if (!emailId || seen.has(emailId)) return;
+                seen.add(emailId);
+                uniqueAccounts.push(account);
+            });
+
+            if (selectedAccount && !seen.has(selectedAccount)) {
+                uniqueAccounts.unshift({ email_id: selectedAccount });
+            }
+
+            accountSelect.innerHTML = uniqueAccounts.map(account => {
+                const emailId = account.email_id;
+                const selected = emailId === selectedAccount ? ' selected' : '';
+                return `<option value="${escapeHtml(emailId)}"${selected}>${escapeHtml(emailId)}</option>`;
+            }).join('');
+        }
+
+        function switchCurrentAccount(emailId) {
+            if (!emailId || emailId === currentAccount) return;
+            currentAccount = emailId;
+            currentEmailFolder = 'all';
+            currentEmailPage = 1;
+            updateCurrentAccountHeader(emailId);
+            clearFilters();
+            window.location.hash = '#/emails/' + encodeURIComponent(emailId);
+            loadEmails();
+        }
+
         // 邮件管理
         function viewAccountEmails(emailId) {
             currentAccount = emailId;
-            document.getElementById('currentAccountEmail').textContent = emailId;
+            currentEmailFolder = 'all';
+            currentEmailPage = 1;
+            updateCurrentAccountHeader(emailId);
+            populateAccountSwitcher(emailId);
+            window.location.hash = '#/emails/' + encodeURIComponent(emailId);
             clearFilters();
             showPage('emails');
         }
 
         function backToAccounts() {
             currentAccount = null;
+            window.location.hash = '#/accounts';
             showPage('accounts');
         }
 
@@ -5550,6 +5869,7 @@ Authorization: Bearer om_your_api_key
 
             const emailsList = document.getElementById('emailsList');
             const refreshBtn = document.getElementById('refreshBtn');
+            updateCurrentAccountHeader(currentAccount);
 
             // Show loading state
             emailsList.innerHTML = '<div class="loading"><div class="loading-spinner"></div>正在加载邮件...</div>';
@@ -6231,6 +6551,15 @@ Authorization: Bearer om_your_api_key
             }
         });
 
+        document.addEventListener('click', function(e) {
+            const searchShell = document.getElementById('emailSearchShell');
+            const searchInput = document.getElementById('mailSearchInput');
+            if (!searchShell || !searchInput || window.innerWidth <= 768) return;
+            if (!searchShell.contains(e.target) && !searchInput.value.trim()) {
+                searchShell.classList.remove('is-expanded');
+            }
+        });
+
             document.addEventListener('keydown', function(e) {
             // Ctrl/Cmd + R: 刷新邮件
             if ((e.ctrlKey || e.metaKey) && e.key === 'r' && currentAccount) {
@@ -6275,22 +6604,32 @@ Authorization: Bearer om_your_api_key
             resetSetupFlow();
             initializeAuthFlow();
         });
+
+        window.addEventListener('resize', function() {
+            const searchInput = document.getElementById('mailSearchInput');
+            toggleEmailSearch(window.innerWidth <= 768 || (searchInput && !!searchInput.value.trim()));
+        });
         
         // URL璺敱澶勭悊
         function handleUrlRouting() {
             const hash = window.location.hash;
-            
+
             if (hash.startsWith('#/emails/')) {
                 const emailId = decodeURIComponent(hash.replace('#/emails/', ''));
                 if (emailId) {
                     // 设置当前账户
                     currentAccount = emailId;
-                    document.getElementById('currentAccountEmail').textContent = emailId;
+                    updateCurrentAccountHeader(emailId);
+                    populateAccountSwitcher(emailId);
 
                     // 显示邮件页面
                     showPage('emails');
                     return;
                 }
+            }
+
+            if (!hash || hash === '#/accounts' || hash === '#') {
+                showPage('accounts');
             }
         }
         

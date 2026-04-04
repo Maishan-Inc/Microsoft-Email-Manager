@@ -20,6 +20,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 # 复制requirements文件并安装Python依赖
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+RUN python -c "import fastapi, httpx, aioimaplib, pydantic, requests"
 
 # 复制应用代码
 COPY main.py .
