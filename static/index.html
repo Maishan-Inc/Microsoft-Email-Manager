@@ -1476,9 +1476,9 @@
         }
 
         .sidebar-logo {
-            width: 72px;
-            height: 72px;
-            border-radius: 22px;
+            width: 60px;
+            height: 60px;
+            border-radius: 18px;
             position: relative;
             display: inline-flex;
             align-items: center;
@@ -1736,6 +1736,15 @@
             margin: 0 auto;
         }
 
+        .sidebar.is-collapsed .sidebar-utility,
+        .sidebar.is-collapsed .sidebar-toggle {
+            width: 46px;
+            min-width: 46px;
+            height: 46px;
+            min-height: 46px;
+            margin: 0 auto;
+        }
+
         .sidebar.is-collapsed .sidebar-footer {
             padding-inline: 14px;
         }
@@ -1943,6 +1952,10 @@
             min-height: 56px;
             margin: 0 auto 18px;
             padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
             overflow: hidden;
             border-radius: 999px;
             transition: width 0.36s cubic-bezier(0.22, 1, 0.36, 1), padding 0.36s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.28s ease, border-color 0.28s ease;
@@ -1951,7 +1964,16 @@
         #emailsPage .search-container.is-expanded {
             width: min(100%, 720px);
             padding: 8px 16px 8px 8px;
+            justify-content: flex-start;
+            gap: 12px;
             box-shadow: 0 18px 34px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.72);
+        }
+
+        #emailsPage .search-container .search-icon {
+            position: static;
+            left: auto;
+            top: auto;
+            transform: none;
         }
 
         .search-icon {
@@ -1980,15 +2002,23 @@
         }
 
         .email-search-toggle {
+            width: 40px;
+            height: 40px;
+            padding: 0;
             border: none;
             cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            align-self: center;
             background: transparent;
             box-shadow: none;
+            line-height: 1;
             transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), background 0.2s ease, color 0.2s ease;
         }
 
         #emailsPage .search-container:not(.is-expanded) .email-search-toggle {
-            margin: 0 auto;
+            margin: 0;
         }
 
         #emailsPage .search-container.is-expanded .email-search-toggle {
@@ -2000,6 +2030,10 @@
             max-width: 0;
             opacity: 0;
             overflow: hidden;
+            display: flex;
+            align-items: center;
+            align-self: center;
+            min-height: 40px;
             transform: translateX(18px);
             transition: max-width 0.36s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.18s ease, transform 0.24s ease;
         }
@@ -2013,6 +2047,7 @@
         }
 
         #emailsPage .search-container .search-input {
+            height: 40px;
             text-align: center;
         }
 
@@ -2387,6 +2422,14 @@
             background: linear-gradient(180deg, rgba(248, 250, 252, 0.95), rgba(255, 255, 255, 0.9));
         }
 
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 12px;
+            padding: 18px 24px 22px;
+        }
+
         .modal-close,
         .close,
         .tag-delete {
@@ -2525,6 +2568,10 @@
 
         .nav-item.active .icon {
             background: transparent;
+        }
+
+        .nav-item[data-page="apiKeys"] .icon.ui-icon svg {
+            transform: translateY(-1px);
         }
 
         .mobile-nav-item {
@@ -2761,12 +2808,65 @@
                 width: calc(100vw - 32px);
             }
 
+            .account-item {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 14px;
+            }
+
+            .account-info {
+                width: 100%;
+                min-width: 0;
+            }
+
+            .account-details {
+                min-width: 0;
+                flex: 1;
+            }
+
+            .account-actions,
+            .auth-actions,
+            .pagination {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .account-actions,
+            .auth-actions {
+                width: 100%;
+            }
+
+            .account-actions .btn,
+            .auth-actions .btn {
+                flex: 1 1 calc(50% - 6px);
+                min-width: 132px;
+                max-width: 100%;
+            }
+
             .btn,
-            .btn-sm {
-                min-height: 34px;
-                padding: 7px 10px;
-                font-size: 0.76rem;
+            .btn-sm,
+            .api-try-button {
+                min-height: 38px;
+                min-width: 0;
+                max-width: 100%;
+                padding: 8px 12px;
+                font-size: 0.78rem;
                 gap: 6px;
+                justify-content: center;
+                text-align: center;
+                line-height: 1.35;
+                white-space: normal;
+                word-break: normal;
+                overflow-wrap: break-word;
+            }
+
+            .btn > span:first-child,
+            .api-try-button > span:first-child {
+                flex: 0 0 auto;
+            }
+
+            .filter-actions .btn {
+                width: min(100%, 180px);
             }
 
             .copy-icon {
@@ -3607,9 +3707,11 @@
                                 <p class="text-sm" style="color: #64748b; margin-bottom: 8px;">
                                     每行格式：<code>邮箱----密码----刷新令牌----客户端ID</code>
                                 </p>
+                                <!--
                                 <p class="text-sm" style="color: #64748b; margin-bottom: 12px;">
                                     推荐购买地址（非广告，仅供参考）：                                    <a target="_blank" href="http://wmemail.com" style="color: #3b82f6; margin: 0 8px;">wmemail.com</a>
                                 </p>
+                                -->
                                 <textarea id="batchAccounts" class="form-input form-textarea" rows="12" placeholder="example1@outlook.com----password1----refresh_token1----client_id1
 example2@outlook.com----password2----refresh_token2----client_id2
 example3@outlook.com----password3----refresh_token3----client_id3"></textarea>
@@ -4300,6 +4402,35 @@ example3@outlook.com----password3----refresh_token3----client_id3"></textarea>
                 .replace(/'/g, '&#39;');
         }
 
+        const DOMAIN_LOGO_RULES = [
+            { keywords: ['microsoft.com', 'office.com', 'outlook.com', 'live.com', 'hotmail.com'], domain: 'microsoft.com' },
+            { keywords: ['google.com', 'gmail.com', 'googlemail.com'], domain: 'google.com' },
+            { keywords: ['openai.com', 'chatgpt.com'], domain: 'openai.com' },
+            { keywords: ['apple.com', 'icloud.com', 'me.com', 'mac.com'], domain: 'apple.com' },
+            { keywords: ['spotify.com'], domain: 'spotify.com' },
+            { keywords: ['music.youtube.com', 'youtube.com', 'ytimg.com'], domain: 'music.youtube.com' },
+            { keywords: ['soundcloud.com'], domain: 'soundcloud.com' },
+            { keywords: ['music.apple.com'], domain: 'music.apple.com' },
+            { keywords: ['amazon.com', 'amazonaws.com'], domain: 'amazon.com' },
+            { keywords: ['meta.com', 'facebook.com', 'instagram.com', 'whatsapp.com'], domain: 'meta.com' },
+            { keywords: ['x.com', 'twitter.com'], domain: 'x.com' },
+            { keywords: ['github.com'], domain: 'github.com' },
+            { keywords: ['gitlab.com'], domain: 'gitlab.com' },
+            { keywords: ['linkedin.com'], domain: 'linkedin.com' },
+            { keywords: ['discord.com'], domain: 'discord.com' },
+            { keywords: ['slack.com'], domain: 'slack.com' },
+            { keywords: ['telegram.org'], domain: 'telegram.org' },
+            { keywords: ['zoom.us'], domain: 'zoom.us' },
+            { keywords: ['adobe.com'], domain: 'adobe.com' },
+            { keywords: ['netflix.com'], domain: 'netflix.com' },
+            { keywords: ['tiktok.com', 'bytedance.com'], domain: 'tiktok.com' },
+            { keywords: ['bilibili.com'], domain: 'bilibili.com' },
+            { keywords: ['qq.com', 'y.qq.com'], domain: 'y.qq.com' },
+            { keywords: ['music.163.com', '163.com'], domain: 'music.163.com' },
+            { keywords: ['kugou.com'], domain: 'kugou.com' },
+            { keywords: ['kuwo.cn'], domain: 'kuwo.cn' }
+        ];
+
         function getSenderProfile(fromValue = '') {
             const rawValue = String(fromValue || '').trim();
             const match = rawValue.match(/^(.*?)(?:<([^>]+)>)?$/);
@@ -4315,11 +4446,24 @@ example3@outlook.com----password3----refresh_token3----client_id3"></textarea>
             };
         }
 
+        function resolveSenderLogoUrl(emailAddress = '', fallbackUrl = '') {
+            const normalizedEmail = String(emailAddress || '').trim().toLowerCase();
+            const domain = normalizedEmail.includes('@') ? normalizedEmail.split('@').pop() : normalizedEmail;
+            if (!domain) {
+                return fallbackUrl || '';
+            }
+
+            const matchedRule = DOMAIN_LOGO_RULES.find(rule => rule.keywords.some(keyword => domain.includes(keyword)));
+            const logoDomain = matchedRule ? matchedRule.domain : domain;
+            return `https://www.google.com/s2/favicons?sz=128&domain_url=${encodeURIComponent(`https://${logoDomain}`)}`;
+        }
+
         function renderSenderAvatar(initial, avatarUrl, className = 'email-avatar') {
             const safeInitial = escapeHtml(initial || '?');
             const safeUrl = avatarUrl ? escapeHtml(avatarUrl) : '';
-            const fallbackClass = avatarUrl ? 'avatar-fallback hidden' : 'avatar-fallback';
-            const imageMarkup = avatarUrl
+            const hasAvatar = Boolean(avatarUrl);
+            const fallbackClass = hasAvatar ? 'avatar-fallback hidden' : 'avatar-fallback';
+            const imageMarkup = hasAvatar
                 ? `<img src="${safeUrl}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove(); const fallback = this.parentElement.querySelector('.avatar-fallback'); if (fallback) fallback.classList.remove('hidden');">`
                 : '';
 
@@ -6021,12 +6165,13 @@ Authorization: Bearer om_your_api_key
         function createEmailItem(email) {
             const unreadClass = email.is_read ? '' : 'unread';
             const sender = getSenderProfile(email.from_email);
+            const senderLogoUrl = resolveSenderLogoUrl(sender.email, email.sender_avatar_url);
             const attachmentIcon = email.has_attachments ? '<span style="color: #8b5cf6;">📎</span>' : '';
             const readIcon = email.is_read ? '✉️' : '📩';
 
             return `
                 <div class="email-item ${unreadClass}" onclick="showEmailDetail('${email.message_id}')">
-                    ${renderSenderAvatar(email.sender_initial || sender.initial, email.sender_avatar_url, 'email-avatar')}
+                    ${renderSenderAvatar(email.sender_initial || sender.initial, senderLogoUrl, 'email-avatar')}
                     <div class="email-content">
                         <div class="email-header">
                             <div class="email-subject">${escapeHtml(email.subject || '(无主题)')}</div>
@@ -6047,11 +6192,12 @@ Authorization: Bearer om_your_api_key
             try {
                 const data = await apiRequest('/emails/' + currentAccount + '/' + messageId);
                 const sender = getSenderProfile(data.from_email);
+                const senderLogoUrl = resolveSenderLogoUrl(sender.email, data.sender_avatar_url);
 
                 document.getElementById('emailModalTitle').textContent = data.subject || '(无主题)';
                 document.getElementById('emailModalContent').innerHTML = `
                     <div class="email-detail-hero">
-                        ${renderSenderAvatar(sender.initial, data.sender_avatar_url, 'email-detail-avatar')}
+                        ${renderSenderAvatar(sender.initial, senderLogoUrl, 'email-detail-avatar')}
                         <div class="email-detail-hero-copy">
                             <div class="email-detail-hero-label">发件人头像</div>
                             <div class="email-detail-hero-name">${escapeHtml(sender.displayName)}</div>
