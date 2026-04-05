@@ -1248,16 +1248,187 @@
         .account-tags {
             display: flex;
             flex-wrap: wrap;
-            gap: 4px;
-            margin-top: 4px;
+            gap: 8px;
+            margin-top: 8px;
         }
 
         .account-tag {
-            background-color: #e2e8f0;
-            color: #475569;
+            background: #e0f2fe;
+            color: #0f4c81;
             font-size: 0.75rem;
-            padding: 2px 8px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            border: 1px solid #bae6fd;
+        }
+
+        .account-tag.category {
+            background: #dbeafe;
+            color: #1d4ed8;
+            border-color: #bfdbfe;
+        }
+
+        .meta-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            border-radius: 999px;
+            border: 1px solid #dbeafe;
+            background: #eff6ff;
+            color: #1d4ed8;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .meta-pill.tag {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+            color: #166534;
+        }
+
+        .option-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .option-chip {
+            border: 1px solid #dbeafe;
+            border-radius: 16px;
+            background: #f8fbff;
+            color: #1e293b;
+            padding: 10px 14px;
+            min-width: 148px;
+            cursor: pointer;
+            transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+        }
+
+        .option-chip:hover {
+            border-color: #60a5fa;
+            background: #eff6ff;
+            transform: translateY(-1px);
+        }
+
+        .option-chip.is-selected {
+            border-color: #2563eb;
+            background: #dbeafe;
+            box-shadow: 0 10px 22px rgba(59, 130, 246, 0.14);
+        }
+
+        .option-chip input {
+            display: none;
+        }
+
+        .option-chip-title {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .option-chip-subtitle {
+            display: block;
+            margin-top: 4px;
+            font-size: 0.72rem;
+            color: #64748b;
+            word-break: break-all;
+        }
+
+        .selection-empty {
+            margin-top: 10px;
+            padding: 12px 14px;
             border-radius: 12px;
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            color: #64748b;
+            font-size: 0.82rem;
+        }
+
+        .taxonomy-layout {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .taxonomy-panel {
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, #f8fbff 100%);
+            padding: 22px;
+        }
+
+        .taxonomy-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .taxonomy-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 16px;
+            border-radius: 16px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+        }
+
+        .taxonomy-item-copy {
+            min-width: 0;
+        }
+
+        .taxonomy-item-title {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .taxonomy-item-subtitle {
+            margin-top: 4px;
+            color: #64748b;
+            font-size: 0.76rem;
+            word-break: break-all;
+        }
+
+        .quick-tags {
+            margin-top: 18px;
+            padding-top: 18px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .quick-tags-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .quick-tag-button {
+            border: 1px solid #cbd5e1;
+            border-radius: 999px;
+            padding: 8px 12px;
+            background: #ffffff;
+            color: #334155;
+            cursor: pointer;
+            font-size: 0.76rem;
+            font-weight: 600;
+            transition: all 0.18s ease;
+        }
+
+        .quick-tag-button:hover {
+            border-color: #60a5fa;
+            color: #1d4ed8;
+        }
+
+        .quick-tag-button.is-active {
+            background: #1d4ed8;
+            border-color: #1d4ed8;
+            color: #ffffff;
+        }
         }
 
         /* 标签管理样式 */
@@ -1323,6 +1494,15 @@
         @media (max-width: 768px) {
             .app-container {
                 flex-direction: column;
+            }
+
+            .taxonomy-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .taxonomy-item {
+                flex-direction: column;
+                align-items: flex-start;
             }
 
             .sidebar {
@@ -1478,9 +1658,9 @@
         }
 
         .sidebar-logo {
-            width: 60px;
-            height: 60px;
-            border-radius: 18px;
+            width: 74px;
+            height: 74px;
+            border-radius: 22px;
             position: relative;
             display: inline-flex;
             align-items: center;
@@ -1496,7 +1676,7 @@
             width: 100%;
             height: 100%;
             object-fit: contain;
-            padding: 10px;
+            padding: 12px;
             display: block;
         }
 
@@ -1529,8 +1709,8 @@
         }
 
         .brand-mark {
-            width: 46px;
-            height: 46px;
+            width: 54px;
+            height: 54px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -1562,8 +1742,8 @@
         .nav-item {
             border-radius: 18px;
             width: 100%;
-            min-height: 58px;
-            padding: 0 14px;
+            min-height: 62px;
+            padding: 0 16px;
             color: rgba(226, 232, 240, 0.84);
             font-weight: 600;
             position: relative;
@@ -1571,7 +1751,7 @@
             display: flex;
             align-items: center;
             justify-content: flex-start;
-            gap: 14px;
+            gap: 16px;
             text-align: left;
             transition: transform 0.18s ease, background 0.18s ease, color 0.18s ease, padding 0.18s ease;
         }
@@ -1648,10 +1828,10 @@
         .nav-item .icon,
         .sidebar-utility .ui-icon,
         .sidebar-toggle .ui-icon {
-            width: 40px;
-            height: 40px;
+            width: 48px;
+            height: 48px;
             margin-right: 0;
-            border-radius: 14px;
+            border-radius: 16px;
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
@@ -2633,6 +2813,13 @@
             height: 18px;
         }
 
+        .sidebar .icon.ui-icon,
+        .sidebar-utility .ui-icon,
+        .sidebar-toggle .ui-icon {
+            width: 24px;
+            height: 24px;
+        }
+
         .nav-item[data-page="apiKeys"] .icon.ui-icon svg {
             transform: translateY(-1px);
         }
@@ -3612,6 +3799,10 @@
                     <span class="icon"></span>
                     <span class="nav-item-text">批量添加</span>
                 </button>
+                <button class="nav-item" type="button" data-page="classifications" onclick="showPage('classifications', this)">
+                    <span class="icon"></span>
+                    <span class="nav-item-text">分类编辑</span>
+                </button>
                 <button class="nav-item" type="button" data-page="apiKeys" onclick="showPage('apiKeys', this)">
                     <span class="icon"></span>
                     <span class="nav-item-text">API 密钥</span>
@@ -3671,6 +3862,10 @@
                                     <span></span>
                                     批量添加
                                 </button>
+                                <button class="btn btn-secondary btn-sm" onclick="showPage('classifications')">
+                                    <span></span>
+                                    分类编辑
+                                </button>
                                 <button class="btn btn-secondary btn-sm" onclick="loadAccounts()">
                                     <span></span>
                                     刷新列表
@@ -3686,6 +3881,11 @@
                                 </div>
                                 <div class="flex-1">
                                     <input type="text" id="tagSearch" class="form-control" placeholder="按标签搜索..." onkeypress="handleSearchKeyPress(event)">
+                                </div>
+                                <div class="flex-1">
+                                    <select id="accountCategorySearch" class="form-control">
+                                        <option value="">全部分类</option>
+                                    </select>
                                 </div>
                                 <button class="btn btn-primary" onclick="searchAccounts()">
                                     <span></span>
@@ -3743,6 +3943,17 @@
 
                         <div style="max-width: 600px;">
                             <div class="form-group">
+                                <label class="form-label">接入方案 *</label>
+                                <select id="accountAuthMethod" class="form-input" onchange="updateAddAccountMethodHints()">
+                                    <option value="imap" selected>IMAP（默认）</option>
+                                    <option value="graph">Graph API</option>
+                                </select>
+                                <p class="text-xs" id="accountAuthMethodHelp" style="color: #64748b; margin-top: 4px;">
+                                    默认使用 IMAP 读取 Outlook / Hotmail 邮件。
+                                </p>
+                            </div>
+
+                            <div class="form-group">
                                 <label class="form-label">邮箱地址 *</label>
                                 <input type="email" id="email" class="form-input" placeholder="example@outlook.com" required>
                                 <p class="text-xs" style="color: #64748b; margin-top: 4px;">请输入有效的 Outlook 邮箱地址</p>
@@ -3766,18 +3977,32 @@
                             <div class="form-group">
                                 <div style="background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0;">
                                     <h4 style="margin: 0 0 8px 0; font-size: 0.875rem; font-weight: 600; color: #374151;">获取步骤</h4>
-                                    <ol style="margin: 0; padding-left: 20px; font-size: 0.75rem; color: #6b7280; line-height: 1.5;">
+                                    <ol id="accountMethodSteps" style="margin: 0; padding-left: 20px; font-size: 0.75rem; color: #6b7280; line-height: 1.5;">
                                         <li>访问 <a href="https://portal.azure.com" target="_blank" style="color: #3b82f6;">Azure Portal</a></li>
                                         <li>注册应用程序并配置权限</li>
                                         <li>获取 Client ID 和 Refresh Token</li>
-                                        <li>确认应用具备邮件读取权限</li>
+                                        <li>确认应用具备 IMAP.AccessAsUser.All 权限</li>
                                     </ol>
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label for="accountTags">标签（可选，逗号分隔）</label>
-                                <input type="text" id="accountTags" class="form-control" placeholder="工作,个人,重要">
+                                <label class="form-label">账户分类（可选）</label>
+                                <select id="accountCategoryKey" class="form-input">
+                                    <option value="">不分类</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="flex items-center justify-between">
+                                    <label class="form-label" style="margin-bottom: 0;">账户标签（可选）</label>
+                                    <button class="btn btn-secondary btn-sm" type="button" onclick="showPage('classifications')">
+                                        <span></span>
+                                        去分类编辑
+                                    </button>
+                                </div>
+                                <div id="addAccountTagsSelector" class="option-grid"></div>
+                                <div id="addAccountTagsEmpty" class="selection-empty hidden">暂无可用标签，请先到“分类编辑”页面创建标签。</div>
                             </div>
 
                             <div class="flex gap-3">
@@ -3814,21 +4039,51 @@
 
                         <div style="max-width: 800px;">
                             <div class="form-group">
+                                <label class="form-label">接入方案 *</label>
+                                <select id="batchAuthMethod" class="form-input" onchange="updateBatchMethodHints()">
+                                    <option value="imap" selected>IMAP（默认）</option>
+                                    <option value="graph">Graph API</option>
+                                </select>
+                                <p class="text-xs" id="batchAuthMethodHelp" style="color: #64748b; margin-top: 4px;">
+                                    当前批量导入将按 IMAP 方案校验和保存这些账户。
+                                </p>
+                            </div>
+
+                            <div class="form-group">
                                 <label class="form-label">批量账户信息</label>
                                 <p class="text-sm" style="color: #64748b; margin-bottom: 8px;">
-                                    每行格式：<code>邮箱----密码----刷新令牌----客户端ID</code>
+                                    <span id="batchFormatHint">每行格式：<code>邮箱----刷新令牌----客户端ID</code></span>
                                 </p>
                                 <!--
                                 <p class="text-sm" style="color: #64748b; margin-bottom: 12px;">
                                     推荐购买地址（非广告，仅供参考）：                                    <a target="_blank" href="http://wmemail.com" style="color: #3b82f6; margin: 0 8px;">wmemail.com</a>
                                 </p>
                                 -->
-                                <textarea id="batchAccounts" class="form-input form-textarea" rows="12" placeholder="example1@outlook.com----password1----refresh_token1----client_id1
-example2@outlook.com----password2----refresh_token2----client_id2
-example3@outlook.com----password3----refresh_token3----client_id3"></textarea>
+                                <textarea id="batchAccounts" class="form-input form-textarea" rows="12" placeholder="example1@outlook.com----refresh_token1----client_id1
+example2@outlook.com----refresh_token2----client_id2
+example3@outlook.com----refresh_token3----client_id3"></textarea>
                                 <p class="text-xs" style="color: #64748b; margin-top: 8px;">
-                                    提示：每行一个账户，使用四个连字符（`----`）分隔字段
+                                    提示：每行一个账户，使用四个连字符（`----`）分隔字段；IMAP 兼容旧格式 <code>邮箱----占位密码----刷新令牌----客户端ID</code>
                                 </p>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">批量导入默认分类（可选）</label>
+                                <select id="batchCategoryKey" class="form-input">
+                                    <option value="">不分类</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="flex items-center justify-between">
+                                    <label class="form-label" style="margin-bottom: 0;">批量导入默认标签（可选）</label>
+                                    <button class="btn btn-secondary btn-sm" type="button" onclick="showPage('classifications')">
+                                        <span></span>
+                                        去分类编辑
+                                    </button>
+                                </div>
+                                <div id="batchTagsSelector" class="option-grid"></div>
+                                <div id="batchTagsEmpty" class="selection-empty hidden">暂无可用标签，请先创建标签。</div>
                             </div>
 
                             <div class="form-group">
@@ -3878,6 +4133,75 @@ example3@outlook.com----password3----refresh_token3----client_id3"></textarea>
                                 <h4 style="margin-bottom: 12px; font-size: 0.875rem; font-weight: 600;">添加结果</h4>
                                 <div id="batchResultsList"></div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="classificationsPage" class="page hidden">
+                    <div class="card">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 class="font-semibold">分类编辑</h3>
+                                <p class="text-sm" style="color: #64748b;">统一维护账户分类与快捷标签。中英文都会保存，英文 key 用于 API 请求。</p>
+                            </div>
+                            <button class="btn btn-secondary btn-sm" type="button" onclick="loadClassifications(true)">
+                                <span></span>
+                                刷新配置
+                            </button>
+                        </div>
+
+                        <div class="taxonomy-layout">
+                            <section class="taxonomy-panel">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 style="margin: 0; font-size: 1rem;">账户分类</h4>
+                                        <p class="text-sm" style="margin: 6px 0 0; color: #64748b;">例如：销售、运营、客服。创建后可在添加账户和筛选账户时直接选用。</p>
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style="margin-top: 18px;">
+                                    <label class="form-label">分类中文名</label>
+                                    <input id="newCategoryZh" type="text" class="form-input" placeholder="例如：已注册客户">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">分类英文名</label>
+                                    <input id="newCategoryEn" type="text" class="form-input" placeholder="例如：registered_customer">
+                                </div>
+                                <div class="flex gap-3">
+                                    <button class="btn btn-primary" type="button" id="createCategoryBtn" onclick="createClassification('category')">
+                                        <span></span>
+                                        创建分类
+                                    </button>
+                                </div>
+
+                                <div id="categoriesList" class="taxonomy-list"></div>
+                            </section>
+
+                            <section class="taxonomy-panel">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 style="margin: 0; font-size: 1rem;">快捷标签</h4>
+                                        <p class="text-sm" style="margin: 6px 0 0; color: #64748b;">例如：已注册 OpenAI、已注册 XXX。可用于账户管理，也可在邮件详情里一键打标。</p>
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style="margin-top: 18px;">
+                                    <label class="form-label">标签中文名</label>
+                                    <input id="newTagZh" type="text" class="form-input" placeholder="例如：已注册 OpenAI">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">标签英文名</label>
+                                    <input id="newTagEn" type="text" class="form-input" placeholder="例如：registered_openai">
+                                </div>
+                                <div class="flex gap-3">
+                                    <button class="btn btn-primary" type="button" id="createTagBtn" onclick="createClassification('tag')">
+                                        <span></span>
+                                        创建标签
+                                    </button>
+                                </div>
+
+                                <div id="tagDefinitionsList" class="taxonomy-list"></div>
+                            </section>
                         </div>
                     </div>
                 </div>
@@ -4062,6 +4386,21 @@ example3@outlook.com----password3----refresh_token3----client_id3"></textarea>
                                                 <span class="api-param-type">string</span>
                                                 <span class="api-param-desc">标签模糊搜索，可选</span>
                                             </div>
+                                            <div class="api-param">
+                                                <span class="api-param-name">category_search</span>
+                                                <span class="api-param-type">string</span>
+                                                <span class="api-param-desc">分类模糊搜索，可匹配分类 key / 中文 / 英文，可选</span>
+                                            </div>
+                                            <div class="api-param">
+                                                <span class="api-param-name">category_key</span>
+                                                <span class="api-param-type">string</span>
+                                                <span class="api-param-desc">按分类 key 精确过滤，可选</span>
+                                            </div>
+                                            <div class="api-param">
+                                                <span class="api-param-name">tag_key</span>
+                                                <span class="api-param-type">string</span>
+                                                <span class="api-param-desc">按标签 key 精确过滤，可选</span>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -4077,7 +4416,20 @@ example3@outlook.com----password3----refresh_token3----client_id3"></textarea>
       "email_id": "example@outlook.com",
       "client_id": "your-client-id",
       "status": "active",
-      "tags": ["宸ヤ綔", "涓汉"]
+      "category_key": "registered_customer",
+      "category": {
+        "key": "registered_customer",
+        "name_zh": "已注册客户",
+        "name_en": "Registered Customer"
+      },
+      "tag_keys": ["registered_openai", "vip"],
+      "tag_details": [
+        {
+          "key": "registered_openai",
+          "name_zh": "已注册 OpenAI",
+          "name_en": "Registered OpenAI"
+        }
+      ]
     }
   ]
 }</div>
@@ -4086,6 +4438,94 @@ example3@outlook.com----password3----refresh_token3----client_id3"></textarea>
                                     <div class="api-response" id="accountsResponse">
                                         <h4 style="margin-bottom: 8px; color: #15803d;">响应结果</h4>
                                         <pre id="accountsResponseData"></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="api-endpoint">
+                                <div class="api-header">
+                                    <div style="display: flex; align-items: center;">
+                                        <span class="api-method get">GET</span>
+                                        <span class="api-path">/classifications</span>
+                                    </div>
+                                </div>
+                                <div class="api-body">
+                                    <p class="api-description">获取当前可用的分类与标签配置，前端可用它生成下拉框、快捷标记和筛选器。</p>
+                                    <div class="api-section">
+                                        <h4>响应示例</h4>
+                                        <div class="api-example">{
+  "categories": [
+    {
+      "key": "registered_customer",
+      "name_zh": "已注册客户",
+      "name_en": "Registered Customer"
+    }
+  ],
+  "tags": [
+    {
+      "key": "registered_openai",
+      "name_zh": "已注册 OpenAI",
+      "name_en": "Registered OpenAI"
+    }
+  ]
+}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="api-endpoint">
+                                <div class="api-header">
+                                    <div style="display: flex; align-items: center;">
+                                        <span class="api-method post">POST</span>
+                                        <span class="api-path">/classifications/categories</span>
+                                    </div>
+                                </div>
+                                <div class="api-body">
+                                    <p class="api-description">创建账户分类。必须同时传中文名和英文名，系统会把英文名规范化为 API key。</p>
+                                    <div class="api-section">
+                                        <h4>请求体</h4>
+                                        <div class="api-example">{
+  "name_zh": "已注册客户",
+  "name_en": "registered_customer"
+}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="api-endpoint">
+                                <div class="api-header">
+                                    <div style="display: flex; align-items: center;">
+                                        <span class="api-method post">POST</span>
+                                        <span class="api-path">/classifications/tags</span>
+                                    </div>
+                                </div>
+                                <div class="api-body">
+                                    <p class="api-description">创建快捷标签。标签同时可用于账户和邮件详情中的一键打标。</p>
+                                    <div class="api-section">
+                                        <h4>请求体</h4>
+                                        <div class="api-example">{
+  "name_zh": "已注册 OpenAI",
+  "name_en": "registered_openai"
+}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="api-endpoint">
+                                <div class="api-header">
+                                    <div style="display: flex; align-items: center;">
+                                        <span class="api-method put">PUT</span>
+                                        <span class="api-path">/accounts/{email_id}/classification</span>
+                                    </div>
+                                </div>
+                                <div class="api-body">
+                                    <p class="api-description">更新指定账户的分类与标签。分类可为空，标签可多选。</p>
+                                    <div class="api-section">
+                                        <h4>请求体</h4>
+                                        <div class="api-example">{
+  "category_key": "registered_customer",
+  "tag_keys": ["registered_openai", "vip"]
+}</div>
                                     </div>
                                 </div>
                             </div>
@@ -4161,7 +4601,15 @@ example3@outlook.com----password3----refresh_token3----client_id3"></textarea>
       "date": "2024-01-01T12:00:00Z",
       "is_read": false,
       "has_attachments": true,
-      "sender_initial": "S"
+      "sender_initial": "S",
+      "tag_keys": ["registered_openai"],
+      "tag_details": [
+        {
+          "key": "registered_openai",
+          "name_zh": "已注册 OpenAI",
+          "name_en": "Registered OpenAI"
+        }
+      ]
     }
   ]
 }</div>
@@ -4215,6 +4663,7 @@ example3@outlook.com----password3----refresh_token3----client_id3"></textarea>
   "from_email": "sender@example.com",
   "to_email": "example@outlook.com",
   "date": "2024-01-01T12:00:00Z",
+  "tag_keys": ["registered_openai"],
   "body_plain": "纯文本邮件内容",
   "body_html": "&lt;html&gt;&lt;body&gt;HTML 邮件内容&lt;/body&gt;&lt;/html&gt;"
 }</div>
@@ -4223,6 +4672,33 @@ example3@outlook.com----password3----refresh_token3----client_id3"></textarea>
                                     <div class="api-response" id="emailDetailResponse">
                                         <h4 style="margin-bottom: 8px; color: #15803d;">响应结果</h4>
                                         <pre id="emailDetailResponseData"></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="api-endpoint">
+                                <div class="api-header">
+                                    <div style="display: flex; align-items: center;">
+                                        <span class="api-method put">PUT</span>
+                                        <span class="api-path">/emails/{email_id}/{message_id}/tags</span>
+                                    </div>
+                                </div>
+                                <div class="api-body">
+                                    <p class="api-description">给指定邮件批量设置标签。前端快捷标记按钮调用的就是这个接口。</p>
+                                    <div class="api-section">
+                                        <h4>请求体</h4>
+                                        <div class="api-example">{
+  "tag_keys": ["registered_openai", "follow_up"]
+}</div>
+                                    </div>
+                                    <div class="api-section">
+                                        <h4>响应示例</h4>
+                                        <div class="api-example">{
+  "email_id": "example@outlook.com",
+  "message_id": "INBOX-1",
+  "message": "Email tags updated successfully.",
+  "tag_keys": ["registered_openai", "follow_up"]
+}</div>
                                     </div>
                                 </div>
                             </div>
@@ -4390,24 +4866,30 @@ example3@outlook.com----password3----refresh_token3----client_id3"></textarea>
         </div>
     </div>
 
-    <!-- 鏍囩绠＄悊妯℃€佹 -->
+    <!-- 账户分类与标签管理 -->
     <div id="tagsModal" class="modal">
         <div class="modal-content" style="max-width: 500px;">
             <div class="modal-header">
-                <h3>管理账户标签</h3>
+                <h3>管理账户分类与标签</h3>
                 <span class="close" onclick="closeTagsModal()">&times;</span>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="currentTags">当前标签</label>
-                    <div id="currentTagsList" class="tags-list"></div>
+                    <label class="form-label" for="editAccountCategoryKey">账户分类</label>
+                    <select id="editAccountCategoryKey" class="form-input">
+                        <option value="">不分类</option>
+                    </select>
                 </div>
                 <div class="form-group">
-                    <label for="newTag">添加新标签</label>
-                    <div class="input-group">
-                        <input type="text" id="newTag" class="form-control" placeholder="输入标签名称">
-                        <button class="btn btn-primary" onclick="addTag()">添加</button>
+                    <div class="flex items-center justify-between">
+                        <label class="form-label" style="margin-bottom: 0;">账户标签</label>
+                        <button class="btn btn-secondary btn-sm" type="button" onclick="showPage('classifications'); closeTagsModal();">
+                            <span></span>
+                            去分类编辑
+                        </button>
                     </div>
+                    <div id="currentTagsList" class="option-grid"></div>
+                    <div id="editAccountTagsEmpty" class="selection-empty hidden">暂无标签，请先创建标签。</div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -4485,7 +4967,7 @@ example3@outlook.com----password3----refresh_token3----client_id3"></textarea>
         <div class="context-menu-divider"></div>
         <div class="context-menu-item" onclick="contextEditTags()">
             <span></span>
-            管理标签
+            管理分类与标签
         </div>
         <div class="context-menu-item danger" onclick="contextDeleteAccount()">
             <span></span>
@@ -4500,6 +4982,7 @@ example3@outlook.com----password3----refresh_token3----client_id3"></textarea>
             accounts: '<svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"></path><circle cx="10" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>',
             plus: '<svg viewBox="0 0 24 24"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>',
             batch: '<svg viewBox="0 0 24 24"><rect x="3" y="4" width="7" height="7" rx="2"></rect><rect x="14" y="4" width="7" height="7" rx="2"></rect><rect x="14" y="15" width="7" height="7" rx="2"></rect><rect x="3" y="15" width="7" height="7" rx="2"></rect></svg>',
+            classification: '<svg viewBox="0 0 24 24"><path d="M4 6h16"></path><path d="M4 12h10"></path><path d="M4 18h16"></path><circle cx="18" cy="12" r="2"></circle></svg>',
             api: '<svg viewBox="0 0 24 24"><path d="M8 9l-4 3 4 3"></path><path d="M16 9l4 3-4 3"></path><path d="M14 4l-4 16"></path></svg>',
             mail: '<svg viewBox="0 0 24 24"><path d="M4 5h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"></path><path d="M22 7l-10 7L2 7"></path></svg>',
             key: '<svg viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="4.5"></circle><path d="M12 15.5h9"></path><path d="M18 12.5v6"></path><path d="M21 13.5v4"></path></svg>',
@@ -4539,16 +5022,24 @@ example3@outlook.com----password3----refresh_token3----client_id3"></textarea>
         let accountsTotalCount = 0;
         let currentEmailSearch = '';
         let currentTagSearch = '';
+        let currentCategoryKeySearch = '';
         let authState = null;
         let appBootstrapped = false;
         let setupAgreementComplete = false;
         let latestCreatedApiKey = '';
         const SIDEBAR_STORAGE_KEY = 'outlookmanager-sidebar-collapsed';
+        let classifications = { categories: [], tags: [] };
+        let addAccountTagKeys = [];
+        let batchTagKeys = [];
 
         // 当前正在编辑的账户信息
         let currentEditAccount = null;
         let currentEditTags = [];
+        let currentEditCategoryKey = '';
+        let currentEditTagDetails = [];
         let currentPublicShareEmail = null;
+        let currentEmailTagKeys = [];
+        let currentEmailMessageId = null;
 
         // 页面管理
         function icon(name, extraClass = '') {
@@ -4575,6 +5066,46 @@ example3@outlook.com----password3----refresh_token3----client_id3"></textarea>
                 .replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;')
                 .replace(/'/g, '&#39;');
+        }
+
+        function normalizeKey(value = '') {
+            return String(value || '').trim().toLowerCase();
+        }
+
+        function toggleKeyInList(list, key) {
+            const normalizedKey = normalizeKey(key);
+            if (!normalizedKey) return Array.isArray(list) ? [...list] : [];
+            const source = Array.isArray(list) ? [...list] : [];
+            return source.includes(normalizedKey)
+                ? source.filter(item => item !== normalizedKey)
+                : [...source, normalizedKey];
+        }
+
+        function getCategoryLabel(category) {
+            if (!category) return '未分类';
+            const zh = category.name_zh || category.nameZh || category.key || '';
+            const en = category.name_en || category.nameEn || category.key || '';
+            return zh && en ? `${zh} · ${en}` : (zh || en || '未分类');
+        }
+
+        function getTagLabel(tag) {
+            if (!tag) return '';
+            const zh = tag.name_zh || tag.nameZh || tag.key || '';
+            const en = tag.name_en || tag.nameEn || tag.key || '';
+            return zh && en ? `${zh} · ${en}` : (zh || en || '');
+        }
+
+        function mergeTagOptions(selectedDetails = []) {
+            const map = new Map();
+            (Array.isArray(classifications.tags) ? classifications.tags : []).forEach(tag => {
+                if (tag && tag.key) map.set(normalizeKey(tag.key), tag);
+            });
+            (Array.isArray(selectedDetails) ? selectedDetails : []).forEach(tag => {
+                if (tag && tag.key && !map.has(normalizeKey(tag.key))) {
+                    map.set(normalizeKey(tag.key), tag);
+                }
+            });
+            return Array.from(map.values());
         }
 
         const DOMAIN_LOGO_RULES = [
@@ -4816,6 +5347,7 @@ example3@outlook.com----password3----refresh_token3----client_id3"></textarea>
 
             if (!appBootstrapped) {
                 decorateStaticUi();
+                loadClassifications().catch(error => console.warn('Unable to preload classifications', error));
                 handleUrlRouting();
 
                 if ((!window.location.hash || window.location.hash === '#') && document.getElementById('accountsPage').classList.contains('hidden')) {
@@ -4969,11 +5501,11 @@ example3@outlook.com----password3----refresh_token3----client_id3"></textarea>
 
         function decorateStaticUi() {
             const navButtons = document.querySelectorAll('.sidebar .nav-item[data-page]');
-            ['accounts', 'plus', 'batch', 'key', 'api', 'mail'].forEach((name, index) => {
+            ['accounts', 'plus', 'batch', 'classification', 'key', 'api', 'mail'].forEach((name, index) => {
                 setButtonIcon(navButtons[index], name, true);
             });
 
-            const navLabels = ['邮箱账户管理', '添加账户', '批量添加', 'API 密钥', 'API 文档', '邮件列表'];
+            const navLabels = ['邮箱账户管理', '添加账户', '批量添加', '分类编辑', 'API 密钥', 'API 文档', '邮件列表'];
             navButtons.forEach((button, index) => {
                 const label = navLabels[index];
                 if (!label) return;
@@ -4993,6 +5525,7 @@ example3@outlook.com----password3----refresh_token3----client_id3"></textarea>
             setButtonIcon(document.querySelector('#accountsPage .btn-primary.btn-sm[onclick="showPage(\'addAccount\')"]'), 'plus');
             setButtonIcon(document.getElementById('accountHealthBtn'), 'health');
             setButtonIcon(document.querySelector('#accountsPage .btn-secondary.btn-sm[onclick="showPage(\'batchAdd\')"]'), 'batch');
+            setButtonIcon(document.querySelector('#accountsPage .btn-secondary.btn-sm[onclick="showPage(\'classifications\')"]'), 'classification');
             setButtonIcon(document.querySelector('#accountsPage .btn-secondary.btn-sm[onclick="loadAccounts()"]'), 'refresh');
             setButtonIcon(document.querySelector('#accountsPage .btn-primary[onclick="searchAccounts()"]'), 'search');
             setButtonIcon(document.querySelector('#accountsPage .btn-secondary[onclick="clearSearch()"]'), 'clear');
@@ -5003,12 +5536,19 @@ example3@outlook.com----password3----refresh_token3----client_id3"></textarea>
             setButtonIcon(document.getElementById('addAccountBtn'), 'plus');
             setButtonIcon(document.querySelector('#addAccountPage .btn-secondary[onclick="clearAddAccountForm()"]'), 'clear');
             setButtonIcon(document.getElementById('testBtn'), 'search');
+            setButtonIcon(document.querySelector('#addAccountPage .btn-secondary.btn-sm[onclick="showPage(\'classifications\')"]'), 'classification');
 
             setButtonIcon(document.querySelector('#batchAddPage .btn-secondary.btn-sm[onclick="showPage(\'accounts\')"]'), 'arrow-left');
             setButtonIcon(document.getElementById('batchAddBtn'), 'batch');
             setButtonIcon(document.querySelector('#batchAddPage .btn-secondary[onclick="clearBatchForm()"]'), 'clear');
             setButtonIcon(document.querySelector('#batchAddPage .btn-secondary[onclick="validateBatchFormat()"]'), 'success');
             setButtonIcon(document.querySelector('#batchAddPage .btn-secondary[onclick="loadSampleData()"]'), 'docs');
+            setButtonIcon(document.querySelector('#batchAddPage .btn-secondary.btn-sm[onclick="showPage(\'classifications\')"]'), 'classification');
+
+            setButtonIcon(document.getElementById('createCategoryBtn'), 'classification');
+            setButtonIcon(document.getElementById('createTagBtn'), 'tags');
+            setButtonIcon(document.querySelector('#classificationsPage .btn.btn-secondary.btn-sm[onclick="loadClassifications(true)"]'), 'refresh');
+            setButtonIcon(document.querySelector('#tagsModal .btn.btn-secondary.btn-sm[onclick="showPage(\'classifications\'); closeTagsModal();"]'), 'classification');
 
             setButtonIcon(document.getElementById('createApiKeyBtn'), 'key');
             setButtonIcon(document.querySelector('#apiKeysPage .btn.btn-secondary.btn-sm[onclick="loadApiKeys()"]'), 'refresh');
@@ -5124,6 +5664,7 @@ example3@outlook.com----password3----refresh_token3----client_id3"></textarea>
                 accounts: '邮箱账户管理',
                 addAccount: '添加邮箱账户',
                 batchAdd: '批量添加账户',
+                classifications: '分类编辑',
                 apiKeys: 'API 密钥',
                 apiDocs: 'API 接口文档',
                 emails: '邮箱账户管理'
@@ -5134,9 +5675,13 @@ example3@outlook.com----password3----refresh_token3----client_id3"></textarea>
                 loadAccounts();
             } else if (pageName === 'addAccount') {
                 clearAddAccountForm();
+                loadClassifications().catch(error => console.warn('Unable to load classifications', error));
             } else if (pageName === 'batchAdd') {
                 clearBatchForm();
                 hideBatchProgress();
+                loadClassifications().catch(error => console.warn('Unable to load classifications', error));
+            } else if (pageName === 'classifications') {
+                loadClassifications(true).catch(error => showNotification('加载分类配置失败: ' + error.message, 'error'));
             } else if (pageName === 'apiKeys') {
                 loadApiKeys();
             } else if (pageName === 'apiDocs') {
@@ -5310,21 +5855,278 @@ example3@outlook.com----password3----refresh_token3----client_id3"></textarea>
             }
         }
 
+        function populateCategorySelect(elementId, selectedKey = '', includeEmpty = true, emptyLabel = '不分类') {
+            const select = document.getElementById(elementId);
+            if (!select) return;
+            const categories = Array.isArray(classifications.categories) ? classifications.categories : [];
+            const normalizedSelected = normalizeKey(selectedKey);
+            const options = [];
+            if (includeEmpty) {
+                options.push(`<option value="">${escapeHtml(emptyLabel)}</option>`);
+            }
+            categories.forEach(category => {
+                const key = normalizeKey(category.key);
+                const selected = key === normalizedSelected ? ' selected' : '';
+                options.push(`<option value="${escapeHtml(key)}"${selected}>${escapeHtml(getCategoryLabel(category))}</option>`);
+            });
+            select.innerHTML = options.join('');
+        }
+
+        function renderTagOptionGrid(containerId, emptyId, selectedKeys = [], onToggleFnName = '', extraOptions = []) {
+            const container = document.getElementById(containerId);
+            const empty = document.getElementById(emptyId);
+            if (!container) return;
+
+            const options = mergeTagOptions(extraOptions);
+            const normalizedSelected = Array.isArray(selectedKeys) ? selectedKeys.map(normalizeKey) : [];
+            if (!options.length) {
+                container.innerHTML = '';
+                if (empty) empty.classList.remove('hidden');
+                return;
+            }
+
+            if (empty) empty.classList.add('hidden');
+            container.innerHTML = options.map(tag => {
+                const key = normalizeKey(tag.key);
+                const selected = normalizedSelected.includes(key);
+                return `
+                    <label class="option-chip ${selected ? 'is-selected' : ''}">
+                        <input type="checkbox" ${selected ? 'checked' : ''} onchange="${onToggleFnName}('${escapeHtml(key)}', this.checked)">
+                        <span class="option-chip-title">${escapeHtml(tag.name_zh || tag.key)}</span>
+                        <span class="option-chip-subtitle">${escapeHtml(tag.name_en || tag.key)}</span>
+                    </label>
+                `;
+            }).join('');
+        }
+
+        function renderTaxonomyList(containerId, items, type) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            if (!Array.isArray(items) || !items.length) {
+                container.innerHTML = '<div class="selection-empty">当前还没有任何配置。</div>';
+                return;
+            }
+
+            container.innerHTML = items.map(item => `
+                <div class="taxonomy-item">
+                    <div class="taxonomy-item-copy">
+                        <div class="taxonomy-item-title">${escapeHtml(item.name_zh || item.key)}</div>
+                        <div class="taxonomy-item-subtitle">${escapeHtml(item.name_en || item.key)} · key: ${escapeHtml(item.key || '')}</div>
+                    </div>
+                    <button class="btn btn-danger btn-sm" type="button" onclick="deleteClassification('${type}', '${escapeHtml(item.key || '')}')">
+                        ${buttonLabel('clear', '删除')}
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function renderClassificationDependentUi() {
+            const addCategoryValue = document.getElementById('accountCategoryKey')?.value || '';
+            const batchCategoryValue = document.getElementById('batchCategoryKey')?.value || '';
+            const editCategoryValue = document.getElementById('editAccountCategoryKey')?.value || currentEditCategoryKey;
+            const searchCategoryValue = document.getElementById('accountCategorySearch')?.value || currentCategoryKeySearch;
+
+            populateCategorySelect('accountCategoryKey', addCategoryValue);
+            populateCategorySelect('batchCategoryKey', batchCategoryValue);
+            populateCategorySelect('editAccountCategoryKey', editCategoryValue);
+            populateCategorySelect('accountCategorySearch', searchCategoryValue, true, '全部分类');
+            renderTagOptionGrid('addAccountTagsSelector', 'addAccountTagsEmpty', addAccountTagKeys, 'toggleAddAccountTag');
+            renderTagOptionGrid('batchTagsSelector', 'batchTagsEmpty', batchTagKeys, 'toggleBatchTag');
+            renderTagOptionGrid('currentTagsList', 'editAccountTagsEmpty', currentEditTags, 'toggleEditAccountTag', currentEditTagDetails);
+            renderTaxonomyList('categoriesList', classifications.categories, 'categories');
+            renderTaxonomyList('tagDefinitionsList', classifications.tags, 'tags');
+        }
+
+        async function loadClassifications(force = false) {
+            if (!force && Array.isArray(classifications.categories) && Array.isArray(classifications.tags) && (classifications.categories.length || classifications.tags.length)) {
+                renderClassificationDependentUi();
+                return classifications;
+            }
+
+            const data = await apiRequest('/classifications');
+            classifications = {
+                categories: Array.isArray(data.categories) ? data.categories : [],
+                tags: Array.isArray(data.tags) ? data.tags : [],
+            };
+            renderClassificationDependentUi();
+            return classifications;
+        }
+
+        async function createClassification(type) {
+            const isCategory = type === 'category';
+            const zhInput = document.getElementById(isCategory ? 'newCategoryZh' : 'newTagZh');
+            const enInput = document.getElementById(isCategory ? 'newCategoryEn' : 'newTagEn');
+            const button = document.getElementById(isCategory ? 'createCategoryBtn' : 'createTagBtn');
+            const nameZh = zhInput?.value.trim() || '';
+            const nameEn = enInput?.value.trim() || '';
+
+            if (!nameZh || !nameEn) {
+                showNotification('中文名和英文名都必须填写', 'warning');
+                return;
+            }
+
+            if (button) {
+                button.disabled = true;
+                button.innerHTML = buttonLabel('loading', isCategory ? '创建分类中...' : '创建标签中...', 'spinning');
+            }
+
+            try {
+                await apiRequest(isCategory ? '/classifications/categories' : '/classifications/tags', {
+                    method: 'POST',
+                    body: JSON.stringify({ name_zh: nameZh, name_en: nameEn })
+                });
+                if (zhInput) zhInput.value = '';
+                if (enInput) enInput.value = '';
+                await loadClassifications(true);
+                showNotification(isCategory ? '分类创建成功' : '标签创建成功', 'success');
+            } catch (error) {
+                showNotification((isCategory ? '创建分类失败: ' : '创建标签失败: ') + error.message, 'error');
+            } finally {
+                if (button) {
+                    button.disabled = false;
+                    button.innerHTML = buttonLabel(isCategory ? 'classification' : 'tags', isCategory ? '创建分类' : '创建标签');
+                }
+            }
+        }
+
+        async function deleteClassification(type, key) {
+            const normalizedKey = normalizeKey(key);
+            if (!normalizedKey) return;
+            const label = type === 'categories' ? '分类' : '标签';
+            if (!confirm(`确定要删除这个${label}吗？`)) return;
+
+            try {
+                await apiRequest(`/${type === 'categories' ? 'classifications/categories' : 'classifications/tags'}/${encodeURIComponent(normalizedKey)}`, {
+                    method: 'DELETE'
+                });
+                await loadClassifications(true);
+                await loadAccounts(accountsCurrentPage);
+                showNotification(`${label}已删除`, 'success');
+            } catch (error) {
+                showNotification(`删除${label}失败: ${error.message}`, 'error');
+            }
+        }
+
+        function toggleAddAccountTag(key) {
+            addAccountTagKeys = toggleKeyInList(addAccountTagKeys, key);
+            renderTagOptionGrid('addAccountTagsSelector', 'addAccountTagsEmpty', addAccountTagKeys, 'toggleAddAccountTag');
+        }
+
+        function toggleBatchTag(key) {
+            batchTagKeys = toggleKeyInList(batchTagKeys, key);
+            renderTagOptionGrid('batchTagsSelector', 'batchTagsEmpty', batchTagKeys, 'toggleBatchTag');
+        }
+
+        function toggleEditAccountTag(key) {
+            currentEditTags = toggleKeyInList(currentEditTags, key);
+            renderTagOptionGrid('currentTagsList', 'editAccountTagsEmpty', currentEditTags, 'toggleEditAccountTag', currentEditTagDetails);
+        }
+
+        function getSelectedAddAccountAuthMethod() {
+            return document.getElementById('accountAuthMethod')?.value || 'imap';
+        }
+
+        function getSelectedBatchAuthMethod() {
+            return document.getElementById('batchAuthMethod')?.value || 'imap';
+        }
+
+        function getBatchPlaceholder(authMethod) {
+            if (authMethod === 'graph') {
+                return `example1@outlook.com----refresh_token1----client_id1
+example2@hotmail.com----refresh_token2----client_id2
+example3@live.com----refresh_token3----client_id3`;
+            }
+
+            return `example1@outlook.com----refresh_token1----client_id1
+example2@hotmail.com----refresh_token2----client_id2
+example3@live.com----refresh_token3----client_id3`;
+        }
+
+        function parseBatchAccountLine(line) {
+            const parts = line.split('----').map(p => p.trim()).filter(part => part.length > 0);
+            if (parts.length === 3) {
+                const [email, refreshToken, clientId] = parts;
+                return { email, refreshToken, clientId };
+            }
+            if (parts.length === 4) {
+                const [email, _legacyPassword, refreshToken, clientId] = parts;
+                return { email, refreshToken, clientId };
+            }
+            return null;
+        }
+
+        function updateAddAccountMethodHints() {
+            const authMethod = getSelectedAddAccountAuthMethod();
+            const help = document.getElementById('accountAuthMethodHelp');
+            const steps = document.getElementById('accountMethodSteps');
+
+            if (help) {
+                help.textContent = authMethod === 'graph'
+                    ? '使用 Microsoft Graph API 读取邮件，适合 Graph 权限令牌。'
+                    : '默认使用 IMAP 读取 Outlook / Hotmail 邮件。';
+            }
+
+            if (steps) {
+                steps.innerHTML = authMethod === 'graph'
+                    ? `
+                        <li>访问 <a href="https://portal.azure.com" target="_blank" style="color: #3b82f6;">Azure Portal</a></li>
+                        <li>注册应用程序并配置 Microsoft Graph 邮件权限</li>
+                        <li>获取 Client ID 和 Refresh Token</li>
+                        <li>确认应用具备 <code>Mail.Read</code> 和 <code>offline_access</code> 权限</li>
+                    `
+                    : `
+                        <li>访问 <a href="https://portal.azure.com" target="_blank" style="color: #3b82f6;">Azure Portal</a></li>
+                        <li>注册应用程序并配置权限</li>
+                        <li>获取 Client ID 和 Refresh Token</li>
+                        <li>确认应用具备 <code>IMAP.AccessAsUser.All</code> 权限</li>
+                    `;
+            }
+        }
+
+        function updateBatchMethodHints() {
+            const authMethod = getSelectedBatchAuthMethod();
+            const help = document.getElementById('batchAuthMethodHelp');
+            const formatHint = document.getElementById('batchFormatHint');
+            const batchAccounts = document.getElementById('batchAccounts');
+
+            if (help) {
+                help.textContent = authMethod === 'graph'
+                    ? '当前批量导入将按 Graph API 方案校验和保存这些账户。'
+                    : '当前批量导入将按 IMAP 方案校验和保存这些账户。';
+            }
+
+            if (formatHint) {
+                formatHint.innerHTML = '每行格式：<code>邮箱----刷新令牌----客户端ID</code>';
+            }
+
+            if (batchAccounts) {
+                batchAccounts.placeholder = getBatchPlaceholder(authMethod);
+            }
+        }
+
         // 表单管理函数
         function clearAddAccountForm() {
+            document.getElementById('accountAuthMethod').value = 'imap';
             document.getElementById('email').value = '';
             document.getElementById('refreshToken').value = '';
             document.getElementById('clientId').value = '';
+            document.getElementById('accountCategoryKey').value = '';
+            addAccountTagKeys = [];
+            updateAddAccountMethodHints();
+            renderTagOptionGrid('addAccountTagsSelector', 'addAccountTagsEmpty', addAccountTagKeys, 'toggleAddAccountTag');
         }
 
         function clearBatchForm() {
+            document.getElementById('batchAuthMethod').value = 'imap';
             document.getElementById('batchAccounts').value = '';
+            document.getElementById('batchCategoryKey').value = '';
+            batchTagKeys = [];
+            updateBatchMethodHints();
+            renderTagOptionGrid('batchTagsSelector', 'batchTagsEmpty', batchTagKeys, 'toggleBatchTag');
         }
 
         function loadSampleData() {
-            const sampleData = `example1@outlook.com----password1----refresh_token_here_1----client_id_here_1
-example2@outlook.com----password2----refresh_token_here_2----client_id_here_2
-example3@outlook.com----password3----refresh_token_here_3----client_id_here_3`;
+            const sampleData = getBatchPlaceholder(getSelectedBatchAuthMethod());
             document.getElementById('batchAccounts').value = sampleData;
             showNotification('示例数据已加载，请替换为真实数据', 'info');
         }
@@ -5341,8 +6143,7 @@ example3@outlook.com----password3----refresh_token_here_3----client_id_here_3`;
             let invalidLines = [];
 
             lines.forEach((line, index) => {
-                const parts = line.split('----').map(p => p.trim());
-                if (parts.length === 4 && parts.every(part => part.length > 0)) {
+                if (parseBatchAccountLine(line)) {
                     validCount++;
                 } else {
                     invalidLines.push(index + 1);
@@ -5357,9 +6158,12 @@ example3@outlook.com----password3----refresh_token_here_3----client_id_here_3`;
         }
 
         async function testAccountConnection() {
+            const authMethod = getSelectedAddAccountAuthMethod();
             const email = document.getElementById('email').value.trim();
             const refreshToken = document.getElementById('refreshToken').value.trim();
             const clientId = document.getElementById('clientId').value.trim();
+            const categoryKey = document.getElementById('accountCategoryKey').value.trim();
+            const tagKeys = [...addAccountTagKeys];
 
             if (!email || !refreshToken || !clientId) {
                 showNotification('请填写所有必填字段', 'warning');
@@ -5371,8 +6175,18 @@ example3@outlook.com----password3----refresh_token_here_3----client_id_here_3`;
             testBtn.innerHTML = buttonLabel('loading', '测试中...', 'spinning');
 
             try {
-            await new Promise(resolve => setTimeout(resolve, 2000)); // 模拟测试
-                showNotification('连接测试成功，账户配置正确', 'success');
+                await apiRequest('/accounts/validate', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        email,
+                        refresh_token: refreshToken,
+                        client_id: clientId,
+                        auth_method: authMethod,
+                        category_key: categoryKey || null,
+                        tag_keys: tagKeys
+                    })
+                });
+                showNotification(`${authMethod === 'graph' ? 'Graph' : 'IMAP'} 连接测试成功，账户配置正确`, 'success');
             } catch (error) {
                 showNotification('连接测试失败：' + error.message, 'error');
             } finally {
@@ -5385,6 +6199,7 @@ example3@outlook.com----password3----refresh_token_here_3----client_id_here_3`;
             const statusMap = {
                 healthy: { label: '健康', color: '#15803d' },
                 imap_error: { label: '降级', color: '#b45309' },
+                graph_error: { label: '降级', color: '#b45309' },
                 auth_error: { label: '异常', color: '#b91c1c' },
                 config_error: { label: '配置异常', color: '#b91c1c' },
                 error: { label: '异常', color: '#b91c1c' },
@@ -5425,8 +6240,10 @@ example3@outlook.com----password3----refresh_token_here_3----client_id_here_3`;
                 // 重置搜索条件
                 currentEmailSearch = '';
                 currentTagSearch = '';
+                currentCategoryKeySearch = '';
                 document.getElementById('accountEmailSearch').value = '';
                 document.getElementById('tagSearch').value = '';
+                document.getElementById('accountCategorySearch').value = '';
                 page = 1;
             }
             
@@ -5454,6 +6271,10 @@ example3@outlook.com----password3----refresh_token_here_3----client_id_here_3`;
                 if (currentTagSearch) {
                     params.append('tag_search', currentTagSearch);
                 }
+
+                if (currentCategoryKeySearch) {
+                    params.append('category_key', currentCategoryKeySearch);
+                }
                 
                 const data = await apiRequest('/accounts?' + params.toString());
                 
@@ -5471,9 +6292,14 @@ example3@outlook.com----password3----refresh_token_here_3----client_id_here_3`;
 
                 accountsList.innerHTML = accounts.map(account => {
                     const health = getAccountHealthDisplay(account);
-                    const tagsHtml = account.tags && account.tags.length > 0 
-                        ? `<div class="account-tags">${account.tags.map(tag => 
-                            `<span class="account-tag">${tag}</span>`).join('')}</div>` 
+                    const authMethodLabel = account.auth_method === 'graph' ? 'Graph' : 'IMAP';
+                    const categoryHtml = account.category
+                        ? `<span class="account-tag category">${escapeHtml(getCategoryLabel(account.category))}</span>`
+                        : '<span class="account-tag category">未分类</span>';
+                    const tagDetails = Array.isArray(account.tag_details) ? account.tag_details : [];
+                    const tagsHtml = tagDetails.length > 0
+                        ? `<div class="account-tags">${tagDetails.map(tag =>
+                            `<span class="account-tag">${escapeHtml(getTagLabel(tag))}</span>`).join('')}</div>`
                         : '';
                         
                     return `
@@ -5482,8 +6308,9 @@ example3@outlook.com----password3----refresh_token_here_3----client_id_here_3`;
                                 <div class="account-avatar">${account.email_id.charAt(0).toUpperCase()}</div>
                                 <div class="account-details">
                                     <h4>${account.email_id}</h4>
-                                    <p>健康状态: <strong style="color: ${health.color};">${health.label}</strong> · ${health.score} 分</p>
+                                    <p>接入方式: <strong>${authMethodLabel}</strong> · 健康状态: <strong style="color: ${health.color};">${health.label}</strong> · ${health.score} 分</p>
                                     <p style="color: #64748b;">${escapeHtml(health.summary)} · 上次检查：${escapeHtml(health.checkedAt)}</p>
+                                    <div class="account-tags">${categoryHtml}</div>
                                     ${tagsHtml}
                                 </div>
                             </div>
@@ -5496,9 +6323,9 @@ example3@outlook.com----password3----refresh_token_here_3----client_id_here_3`;
                                     <span></span>
                                     公开页面
                                 </button>
-                                <button class="btn btn-secondary btn-sm" onclick="editAccountTags('${account.email_id}', ${JSON.stringify(account.tags || [])})">
+                                <button class="btn btn-secondary btn-sm" onclick="editAccountTags('${account.email_id}')">
                                     <span></span>
-                                    管理标签
+                                    管理分类
                                 </button>
                                 <button class="btn btn-danger btn-sm" onclick="deleteAccount('${account.email_id}')">
                                     <span></span>
@@ -5519,13 +6346,12 @@ example3@outlook.com----password3----refresh_token_here_3----client_id_here_3`;
         }
 
         async function addAccount() {
+            const authMethod = getSelectedAddAccountAuthMethod();
             const email = document.getElementById('email').value.trim();
             const refreshToken = document.getElementById('refreshToken').value.trim();
             const clientId = document.getElementById('clientId').value.trim();
-            const tagsInput = document.getElementById('accountTags').value.trim();
-            
-            // 澶勭悊鏍囩
-            const tags = tagsInput ? tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag) : [];
+            const categoryKey = document.getElementById('accountCategoryKey').value.trim();
+            const tagKeys = [...addAccountTagKeys];
 
             if (!email || !refreshToken || !clientId) {
                 showNotification('请填写所有必填字段', 'warning');
@@ -5543,7 +6369,9 @@ example3@outlook.com----password3----refresh_token_here_3----client_id_here_3`;
                         email,
                         refresh_token: refreshToken,
                         client_id: clientId,
-                        tags: tags
+                        auth_method: authMethod,
+                        category_key: categoryKey || null,
+                        tag_keys: tagKeys
                     })
                 });
 
@@ -5560,7 +6388,10 @@ example3@outlook.com----password3----refresh_token_here_3----client_id_here_3`;
         }
 
         async function batchAddAccounts() {
+            const authMethod = getSelectedBatchAuthMethod();
             const batchText = document.getElementById('batchAccounts').value.trim();
+            const categoryKey = document.getElementById('batchCategoryKey').value.trim();
+            const tagKeys = [...batchTagKeys];
             if (!batchText) {
                 showNotification('请输入账户信息', 'warning');
                 return;
@@ -5584,22 +6415,22 @@ example3@outlook.com----password3----refresh_token_here_3----client_id_here_3`;
 
             for (let i = 0; i < lines.length; i++) {
                 const line = lines[i];
-                const parts = line.split('----').map(p => p.trim());
+                const parsedLine = parseBatchAccountLine(line);
 
                 // 更新进度
                 updateBatchProgress(i + 1, lines.length, `正在处理第 ${i + 1} 个账户...`);
 
-                if (parts.length !== 4) {
+                if (!parsedLine) {
                     failCount++;
                     results.push({
-                        email: parts[0] || '格式错误',
+                        email: line.split('----')[0] || '格式错误',
                         status: 'error',
-                        message: '格式错误: 应为 邮箱----密码----刷新令牌----客户端ID'
+                        message: '格式错误: 应为 邮箱----刷新令牌----客户端ID，或兼容旧格式 邮箱----占位密码----刷新令牌----客户端ID'
                     });
                     continue;
                 }
 
-                const [email, password, refreshToken, clientId] = parts;
+                const { email, refreshToken, clientId } = parsedLine;
 
                 try {
                     await apiRequest('/accounts', {
@@ -5607,7 +6438,10 @@ example3@outlook.com----password3----refresh_token_here_3----client_id_here_3`;
                         body: JSON.stringify({
                             email: email,
                             refresh_token: refreshToken,
-                            client_id: clientId
+                            client_id: clientId,
+                            auth_method: authMethod,
+                            category_key: categoryKey || null,
+                            tag_keys: tagKeys
                         })
                     });
                     successCount++;
@@ -6020,38 +6854,131 @@ example3@outlook.com----password3----refresh_token_here_3----client_id_here_3`;
 
 **请求**
 \`\`\`
-GET /accounts
+GET /accounts?page=1&page_size=10&email_search=&tag_search=&category_search=&category_key=&tag_key=
+Authorization: Bearer om_your_api_key
+\`\`\`
+
+**查询参数**
+- \`email_search\`: 邮箱模糊搜索
+- \`tag_search\`: 标签模糊搜索
+- \`category_search\`: 分类模糊搜索，匹配 key / 中文 / 英文
+- \`category_key\`: 分类 key 精确过滤
+- \`tag_key\`: 标签 key 精确过滤
+
+**响应示例**
+\`\`\`json
+{
+  "total_accounts": 1,
+  "page": 1,
+  "page_size": 10,
+  "total_pages": 1,
+  "accounts": [
+    {
+      "email_id": "example@outlook.com",
+      "client_id": "your-client-id",
+      "status": "active",
+      "category_key": "registered_customer",
+      "category": {
+        "key": "registered_customer",
+        "name_zh": "已注册客户",
+        "name_en": "Registered Customer"
+      },
+      "tag_keys": ["registered_openai"],
+      "tag_details": [
+        {
+          "key": "registered_openai",
+          "name_zh": "已注册 OpenAI",
+          "name_en": "Registered OpenAI"
+        }
+      ]
+    }
+  ]
+}
+\`\`\`
+
+### 2. 获取分类与标签配置
+
+**请求**
+\`\`\`
+GET /classifications
 Authorization: Bearer om_your_api_key
 \`\`\`
 
 **响应示例**
 \`\`\`json
 {
-  "accounts": [
+  "categories": [
     {
-      "email_id": "example@outlook.com",
-      "status": "active",
-      "last_sync": "2024-01-01T12:00:00Z"
+      "key": "registered_customer",
+      "name_zh": "已注册客户",
+      "name_en": "Registered Customer"
     }
   ],
-  "total_count": 1
+  "tags": [
+    {
+      "key": "registered_openai",
+      "name_zh": "已注册 OpenAI",
+      "name_en": "Registered OpenAI"
+    }
+  ]
 }
 \`\`\`
 
-### 2. 获取邮件列表
+### 3. 创建分类
+
+**请求**
+\`\`\`
+POST /classifications/categories
+Authorization: Bearer om_your_api_key
+\`\`\`
+
+**请求体**
+\`\`\`json
+{
+  "name_zh": "已注册客户",
+  "name_en": "registered_customer"
+}
+\`\`\`
+
+### 4. 创建标签
+
+**请求**
+\`\`\`
+POST /classifications/tags
+Authorization: Bearer om_your_api_key
+\`\`\`
+
+**请求体**
+\`\`\`json
+{
+  "name_zh": "已注册 OpenAI",
+  "name_en": "registered_openai"
+}
+\`\`\`
+
+### 5. 更新账户分类与标签
+
+**请求**
+\`\`\`
+PUT /accounts/{email_id}/classification
+Authorization: Bearer om_your_api_key
+\`\`\`
+
+**请求体**
+\`\`\`json
+{
+  "category_key": "registered_customer",
+  "tag_keys": ["registered_openai", "vip"]
+}
+\`\`\`
+
+### 6. 获取邮件列表
 
 **请求**
 \`\`\`
 GET /emails/{email_id}?folder=inbox&page=1&page_size=20&refresh=false
 Authorization: Bearer om_your_api_key
 \`\`\`
-
-**参数说明**
-- \`email_id\`: 邮箱地址（需要 URL 编码）
-- \`folder\`: 文件夹（all、inbox、junk）
-- \`page\`: 页码
-- \`page_size\`: 每页数量
-- \`refresh\`: 是否强制刷新
 
 **响应示例**
 \`\`\`json
@@ -6061,11 +6988,17 @@ Authorization: Bearer om_your_api_key
   "page": 1,
   "page_size": 20,
   "total_emails": 150,
-  "emails": [...]
+  "emails": [
+    {
+      "message_id": "INBOX-1",
+      "subject": "邮件主题",
+      "tag_keys": ["registered_openai"]
+    }
+  ]
 }
 \`\`\`
 
-### 3. 获取邮件详情
+### 7. 获取邮件详情
 
 **请求**
 \`\`\`
@@ -6085,8 +7018,24 @@ Authorization: Bearer om_your_api_key
   "from_email": "sender@example.com",
   "to_email": "example@outlook.com",
   "date": "2024-01-01T12:00:00Z",
+  "tag_keys": ["registered_openai"],
   "body_plain": "纯文本内容",
   "body_html": "HTML 内容"
+}
+\`\`\`
+
+### 8. 给邮件打标签
+
+**请求**
+\`\`\`
+PUT /emails/{email_id}/{message_id}/tags
+Authorization: Bearer om_your_api_key
+\`\`\`
+
+**请求体**
+\`\`\`json
+{
+  "tag_keys": ["registered_openai", "follow_up"]
 }
 \`\`\`
 
@@ -6358,7 +7307,10 @@ Authorization: Bearer om_your_api_key
 
             filteredEmails = allEmails.filter(email => {
                 if (searchTerm) {
-                    const searchableText = `${email.subject || ''} ${email.from_email || ''} ${email.body_plain || ''}`.toLowerCase();
+                    const tagText = Array.isArray(email.tag_details)
+                        ? email.tag_details.map(tag => `${tag.key || ''} ${tag.name_zh || ''} ${tag.name_en || ''}`).join(' ')
+                        : '';
+                    const searchableText = `${email.subject || ''} ${email.from_email || ''} ${email.body_plain || ''} ${tagText}`.toLowerCase();
                     if (!searchableText.includes(searchTerm)) {
                         return false;
                     }
@@ -6441,12 +7393,88 @@ Authorization: Bearer om_your_api_key
             renderFilteredEmails();
         }
 
+        function renderInlineTagBadges(tagDetails = [], extraClass = '') {
+            const tags = Array.isArray(tagDetails) ? tagDetails : [];
+            if (!tags.length) return '';
+            return `<div class="account-tags ${extraClass}">${tags.map(tag => `<span class="account-tag">${escapeHtml(getTagLabel(tag))}</span>`).join('')}</div>`;
+        }
+
+        function buildEmailQuickTagsSection(tagDetails = []) {
+            const options = mergeTagOptions(tagDetails);
+            if (!options.length) {
+                return `
+                    <div class="quick-tags">
+                        <div class="selection-empty">暂无快捷标签，请先到“分类编辑”页面创建标签。</div>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="quick-tags">
+                    <div class="quick-tags-title">
+                        <strong>快捷标记</strong>
+                        <span style="color: #64748b; font-size: 0.75rem;">点击即可给当前邮件打标签</span>
+                    </div>
+                    <div class="option-grid">
+                        ${options.map(tag => {
+                            const key = normalizeKey(tag.key);
+                            const active = currentEmailTagKeys.includes(key);
+                            return `<button class="quick-tag-button ${active ? 'is-active' : ''}" type="button" onclick="toggleCurrentEmailTag('${escapeHtml(key)}')">${escapeHtml(tag.name_zh || tag.key)}</button>`;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderCurrentEmailQuickTags(tagDetails = []) {
+            const wrap = document.getElementById('emailQuickTagsWrap');
+            if (!wrap) return;
+            wrap.innerHTML = buildEmailQuickTagsSection(tagDetails);
+        }
+
+        function syncLocalEmailTagState(messageId, tagKeys, tagDetails) {
+            const normalizedMessageId = String(messageId || '');
+            const normalizedTagKeys = Array.isArray(tagKeys) ? tagKeys.map(normalizeKey) : [];
+            const nextTagDetails = Array.isArray(tagDetails) ? tagDetails : [];
+            const applyToList = list => list.map(email => {
+                if (email.message_id !== normalizedMessageId) return email;
+                return {
+                    ...email,
+                    tag_keys: normalizedTagKeys,
+                    tag_details: nextTagDetails
+                };
+            });
+
+            allEmails = applyToList(allEmails);
+            filteredEmails = applyToList(filteredEmails);
+            renderFilteredEmails();
+        }
+
+        async function toggleCurrentEmailTag(key) {
+            if (!currentAccount || !currentEmailMessageId) return;
+            const nextTagKeys = toggleKeyInList(currentEmailTagKeys, key);
+            try {
+                const response = await apiRequest(`/emails/${currentAccount}/${encodeURIComponent(currentEmailMessageId)}/tags`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ tag_keys: nextTagKeys })
+                });
+                currentEmailTagKeys = Array.isArray(response.tag_keys) ? response.tag_keys.map(normalizeKey) : [];
+                const tagDetails = Array.isArray(response.tag_details) ? response.tag_details : [];
+                renderCurrentEmailQuickTags(tagDetails);
+                syncLocalEmailTagState(currentEmailMessageId, currentEmailTagKeys, tagDetails);
+                showNotification('邮件标签已更新', 'success', '', 1200);
+            } catch (error) {
+                showNotification('更新邮件标签失败: ' + error.message, 'error');
+            }
+        }
+
         function createEmailItem(email) {
             const unreadClass = email.is_read ? '' : 'unread';
             const sender = getSenderProfile(email.from_email);
             const senderLogoUrl = resolveSenderLogoUrl(sender.email);
             const attachmentIcon = email.has_attachments ? '<span style="color: #8b5cf6;">📎</span>' : '';
             const readIcon = email.is_read ? '✉️' : '📩';
+            const tagsHtml = renderInlineTagBadges(email.tag_details || [], 'email-list-tags');
 
             return `
                 <div class="email-item ${unreadClass}" onclick="showEmailDetail('${email.message_id}')">
@@ -6458,12 +7486,14 @@ Authorization: Bearer om_your_api_key
                         </div>
                         <div class="email-from">${readIcon} ${escapeHtml(sender.email)} ${attachmentIcon}</div>
                         <div class="email-preview">文件夹: ${escapeHtml(email.folder)} | 点击查看详情</div>
+                        ${tagsHtml}
                     </div>
                 </div>
             `;
         }
 
         async function showEmailDetail(messageId) {
+            await loadClassifications().catch(() => null);
             document.getElementById('emailModal').classList.remove('hidden');
             document.getElementById('emailModalTitle').textContent = '邮件详情';
             document.getElementById('emailModalContent').innerHTML = '<div class="loading">正在加载邮件详情...</div>';
@@ -6472,6 +7502,8 @@ Authorization: Bearer om_your_api_key
                 const data = await apiRequest('/emails/' + currentAccount + '/' + messageId);
                 const sender = getSenderProfile(data.from_email);
                 const senderLogoUrl = resolveSenderLogoUrl(sender.email);
+                currentEmailMessageId = data.message_id;
+                currentEmailTagKeys = Array.isArray(data.tag_keys) ? data.tag_keys.map(normalizeKey) : [];
 
                 document.getElementById('emailModalTitle').textContent = data.subject || '(无主题)';
                 document.getElementById('emailModalContent').innerHTML = `
@@ -6501,6 +7533,7 @@ Authorization: Bearer om_your_api_key
                             <strong>${escapeHtml(data.message_id)}</strong>
                         </div>
                     </div>
+                    <div id="emailQuickTagsWrap">${buildEmailQuickTagsSection(data.tag_details || [])}</div>
                     ${renderEmailContent(data)}
                 `;
 
@@ -6563,6 +7596,8 @@ Authorization: Bearer om_your_api_key
 
         function closeEmailModal() {
             document.getElementById('emailModal').classList.add('hidden');
+            currentEmailMessageId = null;
+            currentEmailTagKeys = [];
         }
 
         function refreshEmails() {
@@ -6593,14 +7628,15 @@ Authorization: Bearer om_your_api_key
         }
 
         function generateEmailCSV(emails) {
-            const headers = ['主题', '发件人', '日期', '文件夹', '是否已读', '是否有附件'];
+            const headers = ['主题', '发件人', '日期', '文件夹', '是否已读', '是否有附件', '标签'];
             const rows = emails.map(email => [
                 `"${(email.subject || '').replace(/"/g, '""')}"`,
                 `"${email.from_email.replace(/"/g, '""')}"`,
                 `"${email.date}"`,
                 `"${email.folder}"`,
                 email.is_read ? '已读' : '未读',
-                email.has_attachments ? '有附件' : '无附件'
+                email.has_attachments ? '有附件' : '无附件',
+                `"${(Array.isArray(email.tag_details) ? email.tag_details.map(getTagLabel).join(' | ') : '').replace(/"/g, '""')}"`
             ]);
 
             return [headers, ...rows].map(row => row.join(',')).join('\n');
@@ -6657,96 +7693,50 @@ Authorization: Bearer om_your_api_key
             loadEmails();
         }
 
-        // 鎵撳紑鏍囩绠＄悊妯℃€佹
-        function editAccountTags(emailId, tags) {
+        async function editAccountTags(emailId) {
+            await loadClassifications().catch(() => null);
+            const account = accounts.find(item => item.email_id === emailId) || {};
             currentEditAccount = emailId;
-            currentEditTags = Array.isArray(tags) ? [...tags] : [];
-            
-            // 更新模态框标题
-            document.querySelector('#tagsModal .modal-header h3').textContent = `管理 ${emailId} 的标签`;
-            
-            // 显示当前标签
-            renderCurrentTags();
-            
-            // 显示模态框
+            currentEditCategoryKey = account.category_key || '';
+            currentEditTags = Array.isArray(account.tag_keys) ? [...account.tag_keys] : [];
+            currentEditTagDetails = Array.isArray(account.tag_details) ? [...account.tag_details] : [];
+
+            document.querySelector('#tagsModal .modal-header h3').textContent = `管理 ${emailId} 的分类与标签`;
+            populateCategorySelect('editAccountCategoryKey', currentEditCategoryKey);
+            renderTagOptionGrid('currentTagsList', 'editAccountTagsEmpty', currentEditTags, 'toggleEditAccountTag', currentEditTagDetails);
             document.getElementById('tagsModal').style.display = 'flex';
         }
 
-        // 渲染当前标签列表
-        function renderCurrentTags() {
-            const tagsList = document.getElementById('currentTagsList');
-            
-            if (currentEditTags.length === 0) {
-                tagsList.innerHTML = '<p class="text-muted">暂无标签</p>';
-                return;
-            }
-            
-            tagsList.innerHTML = currentEditTags.map(tag => `
-                <div class="tag-item">
-                    <span class="tag-name">${tag}</span>
-                    <button class="tag-delete" onclick="removeTag('${tag}')">&times;</button>
-                </div>
-            `).join('');
-        }
-
-        function addTag() {
-            const newTagInput = document.getElementById('newTag');
-            const newTag = newTagInput.value.trim();
-            
-            if (!newTag) {
-                showNotification('标签名称不能为空', 'warning');
-                return;
-            }
-            
-            // 妫€鏌ユ爣绛炬槸鍚﹀凡瀛樺湪
-            if (currentEditTags.includes(newTag)) {
-                showNotification('标签已存在', 'warning');
-                return;
-            }
-            
-            // Add tag
-            currentEditTags.push(newTag);
-            
-            // Clear input
-            newTagInput.value = '';
-            
-            // 重新渲染标签列表
-            renderCurrentTags();
-        }
-
-        // 鍒犻櫎鏍囩
-        function removeTag(tag) {
-            currentEditTags = currentEditTags.filter(t => t !== tag);
-            renderCurrentTags();
-        }
-
-        // 鍏抽棴鏍囩绠＄悊妯℃€佹
         function closeTagsModal() {
             document.getElementById('tagsModal').style.display = 'none';
             currentEditAccount = null;
             currentEditTags = [];
+            currentEditCategoryKey = '';
+            currentEditTagDetails = [];
         }
 
-        // 淇濆瓨璐︽埛鏍囩
         async function saveAccountTags() {
             if (!currentEditAccount) {
                 closeTagsModal();
                 return;
             }
-            
+
             try {
-                const response = await apiRequest('/accounts/' + currentEditAccount + '/tags', {
+                const categoryKey = document.getElementById('editAccountCategoryKey').value.trim();
+                await apiRequest('/accounts/' + currentEditAccount + '/classification', {
                     method: 'PUT',
-                    body: JSON.stringify({ tags: currentEditTags })
+                    body: JSON.stringify({
+                        category_key: categoryKey || null,
+                        tag_keys: currentEditTags
+                    })
                 });
-                
-                showSuccess('标签更新成功');
+
+                showSuccess('账户分类与标签更新成功');
                 closeTagsModal();
-                
-                // 閲嶆柊鍔犺浇璐︽埛鍒楄〃
+
                 loadAccounts();
             } catch (error) {
-                showError('更新标签失败: ' + error.message);
+                showError('更新账户分类失败: ' + error.message);
             }
         }
 
@@ -7006,14 +7996,17 @@ Authorization: Bearer om_your_api_key
         function searchAccounts() {
             currentEmailSearch = document.getElementById('accountEmailSearch').value.trim();
             currentTagSearch = document.getElementById('tagSearch').value.trim();
+            currentCategoryKeySearch = document.getElementById('accountCategorySearch').value.trim();
             loadAccounts(1);
         }
-        
+
         function clearSearch() {
             document.getElementById('accountEmailSearch').value = '';
             document.getElementById('tagSearch').value = '';
+            document.getElementById('accountCategorySearch').value = '';
             currentEmailSearch = '';
             currentTagSearch = '';
+            currentCategoryKeySearch = '';
             loadAccounts(1);
         }
         
@@ -7113,7 +8106,7 @@ Authorization: Bearer om_your_api_key
             if (contextMenuTarget) {
                 const account = accounts.find(acc => acc.email_id === contextMenuTarget);
                 if (account) {
-                    editAccountTags(contextMenuTarget, account.tags || []);
+                    editAccountTags(contextMenuTarget);
                 }
             }
             hideContextMenu();
@@ -7203,6 +8196,8 @@ Authorization: Bearer om_your_api_key
             document.getElementById('authAgreementScroll').addEventListener('scroll', handleAgreementScroll);
             toggleApiKeyExpiryMode();
             toggleApiKeyRequestMode();
+            updateAddAccountMethodHints();
+            updateBatchMethodHints();
             resetSetupFlow();
             initializeAuthFlow();
         });

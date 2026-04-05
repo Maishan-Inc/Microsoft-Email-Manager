@@ -10,6 +10,7 @@ Version: 1.0.0
 
 import asyncio
 import email
+import html as html_lib
 import hashlib
 import hmac
 import imaplib
@@ -54,6 +55,8 @@ API_KEYS_FILE = Path(os.getenv("API_KEYS_FILE", str(DATA_DIR / "api_keys.json"))
 PUBLIC_SHARES_FILE = Path(os.getenv("PUBLIC_SHARES_FILE", str(DATA_DIR / "public_shares.json")))
 OPEN_ACCESS_SESSIONS_FILE = Path(os.getenv("OPEN_ACCESS_SESSIONS_FILE", str(DATA_DIR / "open_access_sessions.json")))
 ACCOUNT_HEALTH_FILE = Path(os.getenv("ACCOUNT_HEALTH_FILE", str(DATA_DIR / "account_health.json")))
+ACCOUNT_CLASSIFICATIONS_FILE = Path(os.getenv("ACCOUNT_CLASSIFICATIONS_FILE", str(DATA_DIR / "account_classifications.json")))
+EMAIL_TAGS_FILE = Path(os.getenv("EMAIL_TAGS_FILE", str(DATA_DIR / "email_tags.json")))
 STATIC_DIR = BASE_DIR / "static"
 SESSION_COOKIE = "outlookmanager_session"
 SESSION_TTL_HOURS = max(1, int(os.getenv("SESSION_TTL_HOURS", "24")))
@@ -66,7 +69,11 @@ OPEN_ACCESS_LOCKOUT_MINUTES = max(1, int(os.getenv("OPEN_ACCESS_LOCKOUT_MINUTES"
 
 # OAuth2配置
 TOKEN_URL = "https://login.microsoftonline.com/consumers/oauth2/v2.0/token"
-OAUTH_SCOPE = "https://outlook.office.com/IMAP.AccessAsUser.All offline_access"
+IMAP_OAUTH_SCOPE = "https://outlook.office.com/IMAP.AccessAsUser.All offline_access"
+GRAPH_OAUTH_SCOPE = "https://graph.microsoft.com/Mail.Read offline_access"
+GRAPH_API_BASE_URL = "https://graph.microsoft.com/v1.0"
+DEFAULT_ACCOUNT_AUTH_METHOD = "imap"
+SUPPORTED_ACCOUNT_AUTH_METHODS = {"imap", "graph"}
 
 # IMAP服务器配置
 IMAP_SERVER = "outlook.live.com"
@@ -79,6 +86,7 @@ SOCKET_TIMEOUT = 15
 
 # 缓存配置
 CACHE_EXPIRE_TIME = 60  # 缓存过期时间（秒）
+CLASSIFICATION_KEY_PATTERN = re.compile(r"^[a-z0-9][a-z0-9_-]{0,63}$")
 
 # 日志配置
 logging.basicConfig(
@@ -97,7 +105,10 @@ class AccountCredentials(BaseModel):
     email: EmailStr
     refresh_token: str
     client_id: str
-    tags: Optional[List[str]] = Field(default=[])
+    auth_method: str = Field(default=DEFAULT_ACCOUNT_AUTH_METHOD)
+    category_key: Optional[str] = None
+    tag_keys: List[str] = Field(default_factory=list)
+    tags: List[str] = Field(default_factory=list)
 
     class Config:
         schema_extra = {
@@ -105,9 +116,32 @@ class AccountCredentials(BaseModel):
                 "email": "user@outlook.com",
                 "refresh_token": "0.AXoA...",
                 "client_id": "your-client-id",
-                "tags": ["工作", "个人"]
+                "auth_method": "imap",
+                "category_key": "sales",
+                "tag_keys": ["registered_openai", "vip"],
+                "tags": ["registered_openai", "vip"]
             }
         }
+
+
+class ClassificationOption(BaseModel):
+    """分类或标签定义"""
+    key: str
+    name_zh: str
+    name_en: str
+    created_at: Optional[str] = None
+
+
+class ClassificationCatalogResponse(BaseModel):
+    """分类与标签配置列表"""
+    categories: List[ClassificationOption] = Field(default_factory=list)
+    tags: List[ClassificationOption] = Field(default_factory=list)
+
+
+class ClassificationCreateRequest(BaseModel):
+    """创建分类或标签"""
+    name_zh: str = Field(min_length=1, max_length=80)
+    name_en: str = Field(min_length=1, max_length=80)
 
 
 class EmailItem(BaseModel):
@@ -121,6 +155,8 @@ class EmailItem(BaseModel):
     has_attachments: bool = False
     sender_initial: str = "?"
     sender_avatar_url: Optional[str] = None
+    tag_keys: List[str] = Field(default_factory=list)
+    tag_details: List[ClassificationOption] = Field(default_factory=list)
 
     class Config:
         schema_extra = {
@@ -133,7 +169,15 @@ class EmailItem(BaseModel):
                 "is_read": False,
                 "has_attachments": False,
                 "sender_initial": "A",
-                "sender_avatar_url": "https://www.gravatar.com/avatar/..."
+                "sender_avatar_url": "https://www.gravatar.com/avatar/...",
+                "tag_keys": ["registered_openai"],
+                "tag_details": [
+                    {
+                        "key": "registered_openai",
+                        "name_zh": "已注册 OpenAI",
+                        "name_en": "Registered OpenAI"
+                    }
+                ]
             }
         }
 
@@ -167,6 +211,8 @@ class EmailDetailsResponse(BaseModel):
     sender_avatar_url: Optional[str] = None
     body_plain: Optional[str] = None
     body_html: Optional[str] = None
+    tag_keys: List[str] = Field(default_factory=list)
+    tag_details: List[ClassificationOption] = Field(default_factory=list)
 
 
 class AccountResponse(BaseModel):
@@ -179,8 +225,13 @@ class AccountInfo(BaseModel):
     """账户信息模型"""
     email_id: str
     client_id: str
+    auth_method: str = DEFAULT_ACCOUNT_AUTH_METHOD
     status: str = "active"
-    tags: List[str] = []
+    category_key: Optional[str] = None
+    category: Optional[ClassificationOption] = None
+    tag_keys: List[str] = Field(default_factory=list)
+    tag_details: List[ClassificationOption] = Field(default_factory=list)
+    tags: List[str] = Field(default_factory=list)
     health_score: int = 0
     health_summary: str = "未检查"
     health_checked_at: Optional[str] = None
@@ -194,9 +245,33 @@ class AccountListResponse(BaseModel):
     total_pages: int
     accounts: List[AccountInfo]
 
-class UpdateTagsRequest(BaseModel):
-    """更新标签请求模型"""
-    tags: List[str]
+
+class UpdateAccountClassificationRequest(BaseModel):
+    """更新账户分类和标签请求模型"""
+    category_key: Optional[str] = None
+    tag_keys: List[str] = Field(default_factory=list)
+    tags: List[str] = Field(default_factory=list)
+
+
+class UpdateEmailTagsRequest(BaseModel):
+    """更新邮件标签请求模型"""
+    tag_keys: List[str] = Field(default_factory=list)
+    tags: List[str] = Field(default_factory=list)
+
+
+class EmailTagUpdateResponse(BaseModel):
+    """邮件标签更新响应"""
+    email_id: str
+    message_id: str
+    message: str
+    tag_keys: List[str] = Field(default_factory=list)
+    tag_details: List[ClassificationOption] = Field(default_factory=list)
+
+
+class ActionResponse(BaseModel):
+    """通用操作响应"""
+    message: str
+    key: Optional[str] = None
 
 
 class PasswordPayload(BaseModel):
@@ -485,6 +560,288 @@ def clear_email_cache(email: str = None) -> None:
         email_count_cache.clear()
         logger.info(f"Cleared all email cache ({cache_count} entries)")
 
+
+def normalize_account_auth_method(auth_method: str | None) -> str:
+    method = (auth_method or DEFAULT_ACCOUNT_AUTH_METHOD).strip().lower()
+    return method if method in SUPPORTED_ACCOUNT_AUTH_METHODS else DEFAULT_ACCOUNT_AUTH_METHOD
+
+
+def _dedupe_preserve_order(values: list[str]) -> list[str]:
+    seen: set[str] = set()
+    normalized_values: list[str] = []
+    for value in values:
+        if value in seen:
+            continue
+        seen.add(value)
+        normalized_values.append(value)
+    return normalized_values
+
+
+def normalize_reference_key(value: Any) -> str:
+    raw_value = str(value or "").strip()
+    if not raw_value:
+        return ""
+
+    ascii_key = re.sub(r"[^a-z0-9_-]+", "_", raw_value.lower()).strip("_")
+    return ascii_key or raw_value
+
+
+def build_classification_key(name_en: Any) -> str:
+    key = normalize_reference_key(name_en)
+    if not key or not CLASSIFICATION_KEY_PATTERN.fullmatch(key):
+        raise HTTPException(
+            status_code=400,
+            detail="English name must generate a valid API key using lowercase letters, numbers, hyphen or underscore.",
+        )
+    return key
+
+
+def normalize_account_category_key(category_key: Any) -> Optional[str]:
+    normalized = normalize_reference_key(category_key)
+    return normalized or None
+
+
+def normalize_account_tags(tags: Any) -> List[str]:
+    if not isinstance(tags, list):
+        return []
+    normalized_tags = [normalize_reference_key(tag) for tag in tags]
+    return _dedupe_preserve_order([tag for tag in normalized_tags if tag])
+
+
+def normalize_account_tag_keys(tag_keys: Any, legacy_tags: Any = None) -> List[str]:
+    primary_values = tag_keys if isinstance(tag_keys, list) and tag_keys else legacy_tags
+    return normalize_account_tags(primary_values)
+
+
+def normalize_classification_record(key: str, payload: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "key": key,
+        "name_zh": str(payload.get("name_zh") or "").strip(),
+        "name_en": str(payload.get("name_en") or "").strip(),
+        "created_at": payload.get("created_at"),
+    }
+
+
+def build_classification_option(key: str, payload: dict[str, Any] | None) -> ClassificationOption:
+    if not payload:
+        fallback_name_en = re.sub(r"[_-]+", " ", key).title() if CLASSIFICATION_KEY_PATTERN.fullmatch(key) else key
+        return ClassificationOption(key=key, name_zh=key, name_en=fallback_name_en)
+    normalized = normalize_classification_record(key, payload)
+    return ClassificationOption(
+        key=key,
+        name_zh=normalized["name_zh"] or key,
+        name_en=normalized["name_en"] or key,
+        created_at=normalized["created_at"],
+    )
+
+
+def sorted_classification_options(collection: dict[str, dict[str, Any]]) -> list[ClassificationOption]:
+    options = [build_classification_option(key, payload) for key, payload in collection.items()]
+    return sorted(options, key=lambda item: ((item.name_zh or item.name_en or item.key).lower(), item.key))
+
+
+def resolve_category_option(category_key: str | None, catalog: dict[str, Any]) -> Optional[ClassificationOption]:
+    if not category_key:
+        return None
+    categories = catalog.get("categories", {})
+    payload = categories.get(category_key)
+    return build_classification_option(category_key, payload)
+
+
+def resolve_tag_options(tag_keys: list[str], catalog: dict[str, Any]) -> list[ClassificationOption]:
+    tags_collection = catalog.get("tags", {})
+    return [build_classification_option(tag_key, tags_collection.get(tag_key)) for tag_key in tag_keys]
+
+
+def validate_catalog_references(category_key: str | None, tag_keys: list[str], catalog: dict[str, Any]) -> None:
+    categories = catalog.get("categories", {})
+    tags = catalog.get("tags", {})
+
+    if category_key and category_key not in categories:
+        raise HTTPException(status_code=400, detail=f"Unknown category_key: {category_key}")
+
+    invalid_tag_keys = [tag_key for tag_key in tag_keys if tag_key not in tags]
+    if invalid_tag_keys:
+        raise HTTPException(status_code=400, detail=f"Unknown tag_keys: {', '.join(invalid_tag_keys)}")
+
+
+def build_account_credentials_from_data(email_id: str, account_data: dict[str, Any]) -> AccountCredentials:
+    return AccountCredentials(
+        email=email_id,
+        refresh_token=str(account_data["refresh_token"]),
+        client_id=str(account_data["client_id"]),
+        auth_method=normalize_account_auth_method(account_data.get("auth_method")),
+        category_key=normalize_account_category_key(account_data.get("category_key")),
+        tag_keys=normalize_account_tag_keys(account_data.get("tag_keys"), account_data.get("tags", [])),
+        tags=normalize_account_tag_keys(account_data.get("tag_keys"), account_data.get("tags", [])),
+    )
+
+
+def get_account_cache_key(credentials: AccountCredentials, folder: str, page: int, page_size: int) -> str:
+    return get_cache_key(
+        f"{credentials.email}:{normalize_account_auth_method(credentials.auth_method)}",
+        folder,
+        page,
+        page_size,
+    )
+
+
+def get_classification_catalog_response() -> ClassificationCatalogResponse:
+    catalog = load_account_classifications_data()
+    return ClassificationCatalogResponse(
+        categories=sorted_classification_options(catalog.get("categories", {})),
+        tags=sorted_classification_options(catalog.get("tags", {})),
+    )
+
+
+def upsert_classification_item(collection_name: str, payload: ClassificationCreateRequest) -> ClassificationOption:
+    key = build_classification_key(payload.name_en)
+    data = load_account_classifications_data()
+    collection = data.get(collection_name, {})
+    if key in collection:
+        raise HTTPException(status_code=409, detail=f"{collection_name[:-1].capitalize()} already exists: {key}")
+
+    duplicate_name_zh = next(
+        (
+            existing_key
+            for existing_key, item in collection.items()
+            if str(item.get("name_zh") or "").strip() == payload.name_zh.strip()
+        ),
+        None,
+    )
+    if duplicate_name_zh:
+        raise HTTPException(status_code=409, detail=f"Chinese name already exists: {payload.name_zh}")
+
+    collection[key] = {
+        "name_zh": payload.name_zh.strip(),
+        "name_en": payload.name_en.strip(),
+        "created_at": datetime.utcnow().isoformat(),
+    }
+    data[collection_name] = collection
+    save_account_classifications_data(data)
+    return build_classification_option(key, collection[key])
+
+
+def remove_classification_item(collection_name: str, key: str) -> None:
+    data = load_account_classifications_data()
+    collection = data.get(collection_name, {})
+    if key not in collection:
+        raise HTTPException(status_code=404, detail=f"{collection_name[:-1].capitalize()} not found: {key}")
+    del collection[key]
+    data[collection_name] = collection
+    save_account_classifications_data(data)
+
+
+def get_email_tag_keys(email_id: str, message_id: str) -> list[str]:
+    data = load_email_tags_data()
+    email_entries = data.get("emails", {}).get(email_id, {})
+    if not isinstance(email_entries, dict):
+        return []
+    return normalize_account_tag_keys(email_entries.get(message_id, []))
+
+
+def set_email_tag_keys(email_id: str, message_id: str, tag_keys: list[str]) -> None:
+    data = load_email_tags_data()
+    emails = data.setdefault("emails", {})
+    email_entries = emails.get(email_id)
+    if not isinstance(email_entries, dict):
+        email_entries = {}
+
+    normalized_tag_keys = normalize_account_tag_keys(tag_keys)
+    if normalized_tag_keys:
+        email_entries[message_id] = normalized_tag_keys
+        emails[email_id] = email_entries
+    else:
+        email_entries.pop(message_id, None)
+        if email_entries:
+            emails[email_id] = email_entries
+        else:
+            emails.pop(email_id, None)
+
+    data["emails"] = emails
+    save_email_tags_data(data)
+
+
+def remove_account_category_references(category_key: str) -> None:
+    if not ACCOUNTS_FILE.exists():
+        return
+
+    with open(ACCOUNTS_FILE, "r", encoding="utf-8") as f:
+        accounts = json.load(f)
+
+    changed = False
+    for account_data in accounts.values():
+        if not isinstance(account_data, dict):
+            continue
+        if normalize_account_category_key(account_data.get("category_key")) == category_key:
+            account_data["category_key"] = None
+            changed = True
+
+    if changed:
+        with open(ACCOUNTS_FILE, "w", encoding="utf-8") as f:
+            json.dump(accounts, f, indent=2, ensure_ascii=False)
+
+
+def remove_tag_references(tag_key: str) -> None:
+    if ACCOUNTS_FILE.exists():
+        with open(ACCOUNTS_FILE, "r", encoding="utf-8") as f:
+            accounts = json.load(f)
+
+        accounts_changed = False
+        for account_data in accounts.values():
+            if not isinstance(account_data, dict):
+                continue
+            normalized_tag_keys = normalize_account_tag_keys(account_data.get("tag_keys"), account_data.get("tags", []))
+            updated_tag_keys = [item for item in normalized_tag_keys if item != tag_key]
+            if updated_tag_keys != normalized_tag_keys:
+                account_data["tag_keys"] = updated_tag_keys
+                account_data.pop("tags", None)
+                accounts_changed = True
+
+        if accounts_changed:
+            with open(ACCOUNTS_FILE, "w", encoding="utf-8") as f:
+                json.dump(accounts, f, indent=2, ensure_ascii=False)
+
+    email_tags_data = load_email_tags_data()
+    emails = email_tags_data.get("emails", {})
+    email_tags_changed = False
+
+    for email_id in list(emails.keys()):
+        message_map = emails.get(email_id)
+        if not isinstance(message_map, dict):
+            continue
+        for message_id in list(message_map.keys()):
+            normalized_tag_keys = normalize_account_tag_keys(message_map.get(message_id, []))
+            updated_tag_keys = [item for item in normalized_tag_keys if item != tag_key]
+            if updated_tag_keys != normalized_tag_keys:
+                email_tags_changed = True
+                if updated_tag_keys:
+                    message_map[message_id] = updated_tag_keys
+                else:
+                    del message_map[message_id]
+        if not message_map:
+            del emails[email_id]
+
+    if email_tags_changed:
+        email_tags_data["emails"] = emails
+        save_email_tags_data(email_tags_data)
+
+
+def apply_email_tag_details(
+    email_id: str,
+    email_obj: EmailItem | EmailDetailsResponse,
+    catalog: dict[str, Any] | None = None,
+    email_tag_map: dict[str, Any] | None = None,
+) -> EmailItem | EmailDetailsResponse:
+    if isinstance(email_tag_map, dict):
+        tag_keys = normalize_account_tag_keys(email_tag_map.get(email_obj.message_id, []))
+    else:
+        tag_keys = get_email_tag_keys(email_id, email_obj.message_id)
+    catalog = catalog or load_account_classifications_data()
+    email_obj.tag_keys = tag_keys
+    email_obj.tag_details = resolve_tag_options(tag_keys, catalog)
+    return email_obj
+
 # ============================================================================
 # 邮件处理辅助函数
 # ============================================================================
@@ -646,11 +1003,7 @@ async def get_account_credentials(email_id: str) -> AccountCredentials:
             logger.error(f"Account {email_id} missing required fields: {missing_fields}")
             raise HTTPException(status_code=500, detail="Account configuration incomplete")
 
-        return AccountCredentials(
-            email=email_id,
-            refresh_token=account_data['refresh_token'],
-            client_id=account_data['client_id']
-        )
+        return build_account_credentials_from_data(email_id, account_data)
 
     except HTTPException:
         # 重新抛出HTTP异常
@@ -674,7 +1027,12 @@ async def save_account_credentials(email_id: str, credentials: AccountCredential
         accounts[email_id] = {
             'refresh_token': credentials.refresh_token,
             'client_id': credentials.client_id,
-            'tags': credentials.tags if hasattr(credentials, 'tags') else []
+            'auth_method': normalize_account_auth_method(getattr(credentials, 'auth_method', DEFAULT_ACCOUNT_AUTH_METHOD)),
+            'category_key': normalize_account_category_key(getattr(credentials, 'category_key', None)),
+            'tag_keys': normalize_account_tag_keys(
+                getattr(credentials, 'tag_keys', []),
+                getattr(credentials, 'tags', []),
+            ),
         }
 
         ACCOUNTS_FILE.parent.mkdir(parents=True, exist_ok=True)
@@ -691,7 +1049,10 @@ async def get_all_accounts(
     page: int = 1, 
     page_size: int = 10, 
     email_search: Optional[str] = None,
-    tag_search: Optional[str] = None
+    tag_search: Optional[str] = None,
+    category_search: Optional[str] = None,
+    category_key: Optional[str] = None,
+    tag_key: Optional[str] = None,
 ) -> AccountListResponse:
     """获取所有已加载的邮箱账户列表，支持分页和搜索"""
     try:
@@ -707,6 +1068,7 @@ async def get_all_accounts(
         with open(ACCOUNTS_FILE, 'r', encoding='utf-8') as f:
             accounts_data = json.load(f)
         health_data = load_account_health_data().get("accounts", {})
+        catalog = load_account_classifications_data()
 
         all_accounts = []
         for email_id, account_info in accounts_data.items():
@@ -714,11 +1076,21 @@ async def get_all_accounts(
             if not isinstance(health_record, dict):
                 health_record = build_account_health_record("unchecked", 0, "未检查")
 
+            normalized_category_key = normalize_account_category_key(account_info.get("category_key"))
+            normalized_tag_keys = normalize_account_tag_keys(account_info.get("tag_keys"), account_info.get("tags", []))
+            category_option = resolve_category_option(normalized_category_key, catalog)
+            tag_options = resolve_tag_options(normalized_tag_keys, catalog)
+
             account = AccountInfo(
                 email_id=email_id,
                 client_id=account_info.get('client_id', ''),
+                auth_method=normalize_account_auth_method(account_info.get('auth_method')),
                 status=str(health_record.get("status") or "unchecked"),
-                tags=account_info.get('tags', []),
+                category_key=normalized_category_key,
+                category=category_option,
+                tag_keys=normalized_tag_keys,
+                tag_details=tag_options,
+                tags=[option.name_zh or option.name_en or option.key for option in tag_options],
                 health_score=max(0, min(int(health_record.get("score", 0) or 0), 100)),
                 health_summary=str(health_record.get("summary") or "未检查"),
                 health_checked_at=health_record.get("checked_at"),
@@ -735,13 +1107,43 @@ async def get_all_accounts(
                 acc for acc in filtered_accounts 
                 if email_search_lower in acc.email_id.lower()
             ]
+
+        if category_key:
+            normalized_category_filter = normalize_account_category_key(category_key)
+            filtered_accounts = [
+                acc for acc in filtered_accounts
+                if normalize_account_category_key(acc.category_key) == normalized_category_filter
+            ]
+
+        if category_search:
+            category_search_lower = category_search.lower()
+            filtered_accounts = [
+                acc for acc in filtered_accounts
+                if (
+                    (acc.category_key and category_search_lower in acc.category_key.lower())
+                    or (acc.category and category_search_lower in acc.category.name_zh.lower())
+                    or (acc.category and category_search_lower in acc.category.name_en.lower())
+                )
+            ]
+
+        if tag_key:
+            normalized_tag_key = normalize_reference_key(tag_key)
+            filtered_accounts = [
+                acc for acc in filtered_accounts
+                if normalized_tag_key in acc.tag_keys
+            ]
         
         # 标签模糊搜索
         if tag_search:
             tag_search_lower = tag_search.lower()
             filtered_accounts = [
                 acc for acc in filtered_accounts 
-                if any(tag_search_lower in tag.lower() for tag in acc.tags)
+                if any(
+                    tag_search_lower in value.lower()
+                    for tag in acc.tag_details
+                    for value in [tag.key, tag.name_zh, tag.name_en]
+                    if value
+                )
             ]
 
         # 计算分页信息
@@ -863,6 +1265,40 @@ def load_account_health_data() -> dict[str, Any]:
 def save_account_health_data(data: dict[str, Any]) -> None:
     with auth_lock:
         _write_json_file(ACCOUNT_HEALTH_FILE, {"accounts": data.get("accounts", {})})
+
+
+def load_account_classifications_data() -> dict[str, Any]:
+    with auth_lock:
+        data = _read_json_file(ACCOUNT_CLASSIFICATIONS_FILE, {"categories": {}, "tags": {}})
+        categories = data.get("categories")
+        tags = data.get("tags")
+        return {
+            "categories": categories if isinstance(categories, dict) else {},
+            "tags": tags if isinstance(tags, dict) else {},
+        }
+
+
+def save_account_classifications_data(data: dict[str, Any]) -> None:
+    with auth_lock:
+        _write_json_file(
+            ACCOUNT_CLASSIFICATIONS_FILE,
+            {
+                "categories": data.get("categories", {}),
+                "tags": data.get("tags", {}),
+            },
+        )
+
+
+def load_email_tags_data() -> dict[str, Any]:
+    with auth_lock:
+        data = _read_json_file(EMAIL_TAGS_FILE, {"emails": {}})
+        emails = data.get("emails")
+        return {"emails": emails if isinstance(emails, dict) else {}}
+
+
+def save_email_tags_data(data: dict[str, Any]) -> None:
+    with auth_lock:
+        _write_json_file(EMAIL_TAGS_FILE, {"emails": data.get("emails", {})})
 
 
 def load_public_shares_data() -> dict[str, Any]:
@@ -1400,33 +1836,20 @@ def make_session_response(
 
 
 async def get_access_token(credentials: AccountCredentials) -> str:
-    """
-    使用refresh_token获取access_token
-
-    Args:
-        credentials: 账户凭证信息
-
-    Returns:
-        str: OAuth2访问令牌
-
-    Raises:
-        HTTPException: 令牌获取失败
-    """
-    # 构建OAuth2请求数据
+    auth_method = normalize_account_auth_method(credentials.auth_method)
+    scope = GRAPH_OAUTH_SCOPE if auth_method == "graph" else IMAP_OAUTH_SCOPE
     token_request_data = {
         'client_id': credentials.client_id,
         'grant_type': 'refresh_token',
         'refresh_token': credentials.refresh_token,
-        'scope': OAUTH_SCOPE
+        'scope': scope
     }
 
     try:
-        # 发送令牌请求
         async with httpx.AsyncClient(timeout=30.0) as client:
             response = await client.post(TOKEN_URL, data=token_request_data)
             response.raise_for_status()
 
-            # 解析响应
             token_data = response.json()
             access_token = token_data.get('access_token')
 
@@ -1437,21 +1860,136 @@ async def get_access_token(credentials: AccountCredentials) -> str:
                     detail="Failed to obtain access token from response"
                 )
 
-            logger.info(f"Successfully obtained access token for {credentials.email}")
+            logger.info(f"Successfully obtained {auth_method} access token for {credentials.email}")
             return access_token
 
     except httpx.HTTPStatusError as e:
         logger.error(f"HTTP {e.response.status_code} error getting access token for {credentials.email}: {e}")
         if e.response.status_code == 400:
             raise HTTPException(status_code=401, detail="Invalid refresh token or client credentials")
-        else:
-            raise HTTPException(status_code=401, detail="Authentication failed")
+        raise HTTPException(status_code=401, detail="Authentication failed")
     except httpx.RequestError as e:
         logger.error(f"Request error getting access token for {credentials.email}: {e}")
         raise HTTPException(status_code=500, detail="Network error during token acquisition")
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Unexpected error getting access token for {credentials.email}: {e}")
         raise HTTPException(status_code=500, detail="Token acquisition failed")
+
+
+def build_graph_headers(access_token: str) -> dict[str, str]:
+    return {
+        "Authorization": f"Bearer {access_token}",
+        "Accept": "application/json",
+    }
+
+
+def extract_graph_error_detail(response: httpx.Response) -> str:
+    try:
+        payload = response.json()
+    except ValueError:
+        return response.text or "Graph API request failed"
+
+    error = payload.get("error")
+    if isinstance(error, dict):
+        return str(error.get("message") or error.get("code") or "Graph API request failed")
+    return str(payload.get("message") or response.text or "Graph API request failed")
+
+
+async def graph_api_get(access_token: str, path: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            response = await client.get(
+                f"{GRAPH_API_BASE_URL}{path}",
+                headers=build_graph_headers(access_token),
+                params=params,
+            )
+            response.raise_for_status()
+            return response.json()
+    except httpx.HTTPStatusError as e:
+        detail = extract_graph_error_detail(e.response)
+        logger.error("Graph API HTTP %s error for %s: %s", e.response.status_code, path, detail)
+        if e.response.status_code in {401, 403}:
+            raise HTTPException(status_code=401, detail=detail)
+        if e.response.status_code == 404:
+            raise HTTPException(status_code=404, detail=detail)
+        raise HTTPException(status_code=500, detail=detail)
+    except httpx.RequestError as e:
+        logger.error(f"Graph API request error for {path}: {e}")
+        raise HTTPException(status_code=500, detail="Network error during Graph API request")
+
+
+def format_graph_email_address(address_payload: dict[str, Any] | None) -> str:
+    if not isinstance(address_payload, dict):
+        return ""
+    email_address = address_payload.get("emailAddress")
+    if not isinstance(email_address, dict):
+        return ""
+    address = str(email_address.get("address") or "").strip()
+    name = str(email_address.get("name") or "").strip()
+    if name and address:
+        return f"{name} <{address}>"
+    return address or name
+
+
+def format_graph_recipients(recipients: list[dict[str, Any]] | None) -> str:
+    if not isinstance(recipients, list):
+        return ""
+    values = [format_graph_email_address(recipient) for recipient in recipients]
+    return ", ".join(value for value in values if value)
+
+
+def build_graph_message_id(folder: str, graph_message_id: str) -> str:
+    return f"graph:{folder}:{graph_message_id}"
+
+
+def parse_graph_message_id(message_id: str) -> tuple[str, str] | None:
+    if not message_id.startswith("graph:"):
+        return None
+    parts = message_id.split(":", 2)
+    if len(parts) != 3 or not parts[2]:
+        raise HTTPException(status_code=400, detail="Invalid Graph message_id format")
+    return parts[1], parts[2]
+
+
+def normalize_graph_folder_name(folder: str) -> tuple[str, str]:
+    if folder == "junk":
+        return "junkemail", "Junk"
+    return "inbox", "INBOX"
+
+
+def graph_message_to_email_item(message: dict[str, Any], folder_key: str) -> EmailItem:
+    graph_message_id = str(message.get("id") or "").strip()
+    if not graph_message_id:
+        raise HTTPException(status_code=500, detail="Graph message is missing id")
+
+    graph_folder_key, display_folder = normalize_graph_folder_name(folder_key)
+    from_email = format_graph_email_address(message.get("from"))
+    subject = str(message.get("subject") or "(No Subject)")
+    received_at = str(message.get("receivedDateTime") or datetime.utcnow().isoformat())
+    sender_initial = "?"
+    match = re.search(r"([A-Za-z])", from_email)
+    if match:
+        sender_initial = match.group(1).upper()
+
+    return EmailItem(
+        message_id=build_graph_message_id(graph_folder_key, graph_message_id),
+        folder=display_folder,
+        subject=subject,
+        from_email=from_email or "(Unknown Sender)",
+        date=received_at,
+        is_read=bool(message.get("isRead", False)),
+        has_attachments=bool(message.get("hasAttachments", False)),
+        sender_initial=sender_initial,
+        sender_avatar_url=build_sender_avatar_url(from_email)
+    )
+
+
+def strip_html_tags(content: str) -> str:
+    if not content:
+        return ""
+    return html_lib.unescape(re.sub(r"<[^>]+>", " ", content)).strip()
 
 
 async def evaluate_account_health(credentials: AccountCredentials) -> dict[str, Any]:
@@ -1488,6 +2026,35 @@ async def evaluate_account_health(credentials: AccountCredentials) -> dict[str, 
             str(exc),
         )
 
+    if normalize_account_auth_method(credentials.auth_method) == "graph":
+        try:
+            await graph_api_get(
+                access_token,
+                "/me/mailFolders/inbox",
+                params={"$select": "id,displayName,totalItemCount"},
+            )
+            return build_account_health_record(
+                "healthy",
+                100,
+                "OAuth 与 Graph 均正常",
+            )
+        except HTTPException as exc:
+            logger.warning(f"Graph health probe failed for {credentials.email}: {exc.detail}")
+            return build_account_health_record(
+                "graph_error",
+                60,
+                "OAuth 正常，但 Graph API 请求失败",
+                str(exc.detail),
+            )
+        except Exception as exc:
+            logger.warning(f"Graph health probe failed for {credentials.email}: {exc}")
+            return build_account_health_record(
+                "graph_error",
+                60,
+                "OAuth 正常，但 Graph API 请求失败",
+                str(exc),
+            )
+
     def _probe_imap() -> dict[str, Any]:
         connection = None
         try:
@@ -1517,6 +2084,19 @@ async def evaluate_account_health(credentials: AccountCredentials) -> dict[str, 
                         pass
 
     return await asyncio.to_thread(_probe_imap)
+
+
+async def validate_account_credentials(credentials: AccountCredentials) -> dict[str, Any]:
+    credentials.auth_method = normalize_account_auth_method(credentials.auth_method)
+    credentials.category_key = normalize_account_category_key(credentials.category_key)
+    credentials.tag_keys = normalize_account_tag_keys(credentials.tag_keys, credentials.tags)
+    credentials.tags = list(credentials.tag_keys)
+    record = await evaluate_account_health(credentials)
+    if record.get("status") != "healthy":
+        detail = str(record.get("detail") or record.get("summary") or "Account validation failed")
+        status_code = 401 if record.get("status") == "auth_error" else 400
+        raise HTTPException(status_code=status_code, detail=detail)
+    return record
 
 
 async def refresh_account_health(email_id: str) -> dict[str, Any]:
@@ -1557,11 +2137,125 @@ async def refresh_all_account_health() -> dict[str, Any]:
 # IMAP核心服务 - 邮件列表
 # ============================================================================
 
+async def list_graph_folder_emails(
+    credentials: AccountCredentials,
+    access_token: str,
+    folder: str,
+    page_size: int,
+    page: int = 1,
+    skip_override: int | None = None,
+    top_override: int | None = None,
+) -> tuple[list[EmailItem], int]:
+    graph_folder_key, _display_name = normalize_graph_folder_name(folder)
+    folder_meta = await graph_api_get(
+        access_token,
+        f"/me/mailFolders/{graph_folder_key}",
+        params={"$select": "id,displayName,totalItemCount"},
+    )
+
+    params: dict[str, Any] = {
+        "$select": "id,subject,from,receivedDateTime,isRead,hasAttachments",
+        "$orderby": "receivedDateTime DESC",
+        "$top": top_override if top_override is not None else page_size,
+    }
+    if skip_override is not None:
+        params["$skip"] = skip_override
+    elif page > 1:
+        params["$skip"] = (page - 1) * page_size
+
+    payload = await graph_api_get(
+        access_token,
+        f"/me/mailFolders/{graph_folder_key}/messages",
+        params=params,
+    )
+    messages = payload.get("value", [])
+    email_items = [graph_message_to_email_item(message, folder) for message in messages if isinstance(message, dict)]
+    total_emails = int(folder_meta.get("totalItemCount", len(email_items)) or 0)
+    return email_items, total_emails
+
+
+async def list_graph_emails(
+    credentials: AccountCredentials,
+    folder: str,
+    page: int,
+    page_size: int,
+    force_refresh: bool = False,
+) -> EmailListResponse:
+    cache_key = get_account_cache_key(credentials, folder, page, page_size)
+    cached_result = get_cached_emails(cache_key, force_refresh)
+    if cached_result:
+        return cached_result
+
+    access_token = await get_access_token(credentials)
+    catalog = load_account_classifications_data()
+    email_tag_map = load_email_tags_data().get("emails", {}).get(str(credentials.email), {})
+
+    if folder in {"inbox", "junk"}:
+        emails, total_emails = await list_graph_folder_emails(credentials, access_token, folder, page_size, page=page)
+        emails = [
+            apply_email_tag_details(str(credentials.email), email_item, catalog, email_tag_map)
+            for email_item in emails
+        ]
+        result = EmailListResponse(
+            email_id=credentials.email,
+            folder_view=folder,
+            page=page,
+            page_size=page_size,
+            total_emails=total_emails,
+            emails=emails,
+        )
+        set_cached_emails(cache_key, result)
+        return result
+
+    fetch_limit = page * page_size
+    inbox_task = list_graph_folder_emails(
+        credentials,
+        access_token,
+        "inbox",
+        page_size,
+        page=1,
+        skip_override=0,
+        top_override=fetch_limit,
+    )
+    junk_task = list_graph_folder_emails(
+        credentials,
+        access_token,
+        "junk",
+        page_size,
+        page=1,
+        skip_override=0,
+        top_override=fetch_limit,
+    )
+    (inbox_emails, inbox_total), (junk_emails, junk_total) = await asyncio.gather(inbox_task, junk_task)
+
+    all_emails = inbox_emails + junk_emails
+    all_emails.sort(key=lambda item: item.date, reverse=True)
+
+    start_index = (page - 1) * page_size
+    end_index = start_index + page_size
+    paginated_emails = [
+        apply_email_tag_details(str(credentials.email), email_item, catalog, email_tag_map)
+        for email_item in all_emails[start_index:end_index]
+    ]
+    result = EmailListResponse(
+        email_id=credentials.email,
+        folder_view=folder,
+        page=page,
+        page_size=page_size,
+        total_emails=inbox_total + junk_total,
+        emails=paginated_emails,
+    )
+    set_cached_emails(cache_key, result)
+    return result
+
+
 async def list_emails(credentials: AccountCredentials, folder: str, page: int, page_size: int, force_refresh: bool = False) -> EmailListResponse:
     """获取邮件列表 - 优化版本"""
+    if normalize_account_auth_method(credentials.auth_method) == "graph":
+        return await list_graph_emails(credentials, folder, page, page_size, force_refresh)
 
     # 检查缓存
-    cache_key = get_cache_key(credentials.email, folder, page, page_size)
+    cache_key = get_account_cache_key(credentials, folder, page, page_size)
     cached_result = get_cached_emails(cache_key, force_refresh)
     if cached_result:
         return cached_result
@@ -1571,6 +2265,8 @@ async def list_emails(credentials: AccountCredentials, folder: str, page: int, p
     def _sync_list_emails():
         imap_client = None
         try:
+            catalog = load_account_classifications_data()
+            email_tag_map = load_email_tags_data().get("emails", {}).get(str(credentials.email), {})
             # 从连接池获取连接
             imap_client = imap_pool.get_connection(credentials.email, access_token)
             
@@ -1700,7 +2396,10 @@ async def list_emails(credentials: AccountCredentials, folder: str, page: int, p
                 page=page,
                 page_size=page_size,
                 total_emails=total_emails,
-                emails=email_items
+                emails=[
+                    apply_email_tag_details(str(credentials.email), email_item, catalog, email_tag_map)
+                    for email_item in email_items
+                ]
             )
 
             # 设置缓存
@@ -1730,8 +2429,49 @@ async def list_emails(credentials: AccountCredentials, folder: str, page: int, p
 # IMAP核心服务 - 邮件详情
 # ============================================================================
 
+async def get_graph_email_details(credentials: AccountCredentials, message_id: str) -> EmailDetailsResponse:
+    parsed_message = parse_graph_message_id(message_id)
+    if not parsed_message:
+        raise HTTPException(status_code=400, detail="Invalid Graph message_id format")
+
+    _folder_name, graph_message_id = parsed_message
+    access_token = await get_access_token(credentials)
+    payload = await graph_api_get(
+        access_token,
+        f"/me/messages/{quote(graph_message_id, safe='')}",
+        params={
+            "$select": "id,subject,from,toRecipients,receivedDateTime,body",
+        },
+    )
+
+    body = payload.get("body") if isinstance(payload.get("body"), dict) else {}
+    body_content = str(body.get("content") or "")
+    content_type = str(body.get("contentType") or "").lower()
+    body_html = body_content if content_type == "html" else None
+    body_plain = body_content if content_type == "text" else None
+    if body_html and not body_plain:
+        body_plain = strip_html_tags(body_html)
+
+    from_email = format_graph_email_address(payload.get("from"))
+    to_email = format_graph_recipients(payload.get("toRecipients"))
+
+    return apply_email_tag_details(str(credentials.email), EmailDetailsResponse(
+        message_id=message_id,
+        subject=str(payload.get("subject") or "(No Subject)"),
+        from_email=from_email or "(Unknown Sender)",
+        to_email=to_email or "(Unknown Recipient)",
+        date=str(payload.get("receivedDateTime") or datetime.utcnow().isoformat()),
+        sender_avatar_url=build_sender_avatar_url(from_email, size=256),
+        body_plain=body_plain if body_plain else None,
+        body_html=body_html if body_html else None,
+    ))
+
+
 async def get_email_details(credentials: AccountCredentials, message_id: str) -> EmailDetailsResponse:
     """获取邮件详细内容 - 优化版本"""
+    if normalize_account_auth_method(credentials.auth_method) == "graph":
+        return await get_graph_email_details(credentials, message_id)
+
     # 解析复合message_id
     try:
         folder_name, msg_id = message_id.split('-', 1)
@@ -1781,7 +2521,7 @@ async def get_email_details(credentials: AccountCredentials, message_id: str) ->
             # 归还连接到池中
             imap_pool.return_connection(credentials.email, imap_client)
 
-            return EmailDetailsResponse(
+            return apply_email_tag_details(str(credentials.email), EmailDetailsResponse(
                 message_id=message_id,
                 subject=subject,
                 from_email=from_email,
@@ -1790,7 +2530,7 @@ async def get_email_details(credentials: AccountCredentials, message_id: str) ->
                 sender_avatar_url=build_sender_avatar_url(from_email, size=256),
                 body_plain=body_plain if body_plain else None,
                 body_html=body_html if body_html else None
-            )
+            ))
 
         except HTTPException:
             raise
@@ -1861,6 +2601,14 @@ async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
         raise RuntimeError(f"Account health path is a directory, expected a file: {ACCOUNT_HEALTH_FILE}")
     if not ACCOUNT_HEALTH_FILE.exists():
         _write_json_file(ACCOUNT_HEALTH_FILE, {"accounts": {}})
+    if ACCOUNT_CLASSIFICATIONS_FILE.exists() and ACCOUNT_CLASSIFICATIONS_FILE.is_dir():
+        raise RuntimeError(f"Account classifications path is a directory, expected a file: {ACCOUNT_CLASSIFICATIONS_FILE}")
+    if not ACCOUNT_CLASSIFICATIONS_FILE.exists():
+        _write_json_file(ACCOUNT_CLASSIFICATIONS_FILE, {"categories": {}, "tags": {}})
+    if EMAIL_TAGS_FILE.exists() and EMAIL_TAGS_FILE.is_dir():
+        raise RuntimeError(f"Email tags path is a directory, expected a file: {EMAIL_TAGS_FILE}")
+    if not EMAIL_TAGS_FILE.exists():
+        _write_json_file(EMAIL_TAGS_FILE, {"emails": {}})
     cleanup_expired_sessions()
     cleanup_expired_open_access()
 
@@ -2196,11 +2944,66 @@ async def get_accounts(
     page: int = Query(1, ge=1, description="页码，从1开始"),
     page_size: int = Query(10, ge=1, le=100, description="每页数量，范围1-100"),
     email_search: Optional[str] = Query(None, description="邮箱账号模糊搜索"),
-    tag_search: Optional[str] = Query(None, description="标签模糊搜索")
+    tag_search: Optional[str] = Query(None, description="标签模糊搜索"),
+    category_search: Optional[str] = Query(None, description="分类模糊搜索，可匹配中英文名称和 key"),
+    category_key: Optional[str] = Query(None, description="按分类 key 精确过滤"),
+    tag_key: Optional[str] = Query(None, description="按标签 key 精确过滤"),
 ):
     """获取所有已加载的邮箱账户列表，支持分页和搜索"""
     require_authenticated(request, allow_api_key=True)
-    return await get_all_accounts(page, page_size, email_search, tag_search)
+    return await get_all_accounts(page, page_size, email_search, tag_search, category_search, category_key, tag_key)
+
+
+@app.get("/classifications", response_model=ClassificationCatalogResponse)
+async def get_classifications(request: Request):
+    require_authenticated(request, allow_api_key=True)
+    return get_classification_catalog_response()
+
+
+@app.post("/classifications/categories", response_model=ClassificationOption)
+async def create_category(payload: ClassificationCreateRequest, request: Request):
+    require_authenticated(request, allow_api_key=True)
+    return upsert_classification_item("categories", payload)
+
+
+@app.post("/classifications/tags", response_model=ClassificationOption)
+async def create_tag_definition(payload: ClassificationCreateRequest, request: Request):
+    require_authenticated(request, allow_api_key=True)
+    return upsert_classification_item("tags", payload)
+
+
+@app.delete("/classifications/categories/{category_key}", response_model=ActionResponse)
+async def delete_category(category_key: str, request: Request):
+    require_authenticated(request, allow_api_key=True)
+    normalized_key = build_classification_key(category_key)
+    remove_classification_item("categories", normalized_key)
+    remove_account_category_references(normalized_key)
+    return ActionResponse(message="Category deleted successfully.", key=normalized_key)
+
+
+@app.delete("/classifications/tags/{tag_key}", response_model=ActionResponse)
+async def delete_tag_definition(tag_key: str, request: Request):
+    require_authenticated(request, allow_api_key=True)
+    normalized_key = build_classification_key(tag_key)
+    remove_classification_item("tags", normalized_key)
+    remove_tag_references(normalized_key)
+    clear_email_cache()
+    return ActionResponse(message="Tag deleted successfully.", key=normalized_key)
+
+
+@app.post("/accounts/validate", response_model=AccountResponse)
+async def validate_account(credentials: AccountCredentials, request: Request):
+    """验证邮箱账户配置"""
+    require_authenticated(request, allow_api_key=True)
+    credentials.category_key = normalize_account_category_key(credentials.category_key)
+    credentials.tag_keys = normalize_account_tag_keys(credentials.tag_keys, credentials.tags)
+    credentials.tags = list(credentials.tag_keys)
+    validate_catalog_references(credentials.category_key, credentials.tag_keys, load_account_classifications_data())
+    await validate_account_credentials(credentials)
+    return AccountResponse(
+        email_id=credentials.email,
+        message="Account connection verified successfully."
+    )
 
 
 @app.post("/accounts", response_model=AccountResponse)
@@ -2208,12 +3011,16 @@ async def register_account(credentials: AccountCredentials, request: Request):
     """注册或更新邮箱账户"""
     require_authenticated(request, allow_api_key=True)
     try:
-        # 验证凭证有效性
-        await get_access_token(credentials)
+        credentials.auth_method = normalize_account_auth_method(credentials.auth_method)
+        credentials.category_key = normalize_account_category_key(credentials.category_key)
+        credentials.tag_keys = normalize_account_tag_keys(credentials.tag_keys, credentials.tags)
+        credentials.tags = list(credentials.tag_keys)
+        validate_catalog_references(credentials.category_key, credentials.tag_keys, load_account_classifications_data())
+        health_record = await validate_account_credentials(credentials)
 
         # 保存凭证
         await save_account_credentials(credentials.email, credentials)
-        save_account_health_record(credentials.email, build_account_health_record("unchecked", 0, "未检查"))
+        save_account_health_record(credentials.email, health_record)
 
         return AccountResponse(
             email_id=credentials.email,
@@ -2245,7 +3052,6 @@ async def get_emails(
     """获取邮件列表"""
     require_authenticated(request, allow_api_key=True)
     credentials = await get_account_credentials(email_id)
-    print('credentials:' + str(credentials))
     return await list_emails(credentials, folder, page, page_size, refresh)
 
 
@@ -2274,29 +3080,39 @@ async def get_dual_view_emails(
     )
 
 
-@app.put("/accounts/{email_id}/tags", response_model=AccountResponse)
-async def update_account_tags(email_id: str, payload: UpdateTagsRequest, request: Request):
-    """更新账户标签"""
+@app.put("/accounts/{email_id}/classification", response_model=AccountResponse)
+async def update_account_classification(email_id: str, payload: UpdateAccountClassificationRequest, request: Request):
+    """更新账户分类和标签"""
     require_authenticated(request, allow_api_key=True)
     try:
         # 检查账户是否存在
         credentials = await get_account_credentials(email_id)
-        
-        # 更新标签
-        credentials.tags = payload.tags
-        
+
+        category_key = normalize_account_category_key(payload.category_key)
+        tag_keys = normalize_account_tag_keys(payload.tag_keys, payload.tags)
+        validate_catalog_references(category_key, tag_keys, load_account_classifications_data())
+
+        credentials.category_key = category_key
+        credentials.tag_keys = tag_keys
+        credentials.tags = list(tag_keys)
+
         # 保存更新后的凭证
         await save_account_credentials(email_id, credentials)
-        
+
         return AccountResponse(
             email_id=email_id,
-            message="Account tags updated successfully."
+            message="Account classification updated successfully."
         )
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error updating account tags: {e}")
-        raise HTTPException(status_code=500, detail="Failed to update account tags")
+        logger.error(f"Error updating account classification: {e}")
+        raise HTTPException(status_code=500, detail="Failed to update account classification")
+
+
+@app.put("/accounts/{email_id}/tags", response_model=AccountResponse)
+async def update_account_tags_legacy(email_id: str, payload: UpdateAccountClassificationRequest, request: Request):
+    return await update_account_classification(email_id, payload, request)
 
 @app.get("/emails/{email_id}/{message_id}", response_model=EmailDetailsResponse)
 async def get_email_detail(email_id: str, message_id: str, request: Request):
@@ -2304,6 +3120,26 @@ async def get_email_detail(email_id: str, message_id: str, request: Request):
     """获取邮件详细内容"""
     credentials = await get_account_credentials(email_id)
     return await get_email_details(credentials, message_id)
+
+
+@app.put("/emails/{email_id}/{message_id}/tags", response_model=EmailTagUpdateResponse)
+async def update_email_tags(email_id: str, message_id: str, payload: UpdateEmailTagsRequest, request: Request):
+    require_authenticated(request, allow_api_key=True)
+    await get_account_credentials(email_id)
+
+    tag_keys = normalize_account_tag_keys(payload.tag_keys, payload.tags)
+    catalog = load_account_classifications_data()
+    validate_catalog_references(None, tag_keys, catalog)
+    set_email_tag_keys(email_id, message_id, tag_keys)
+    clear_email_cache(email_id)
+
+    return EmailTagUpdateResponse(
+        email_id=email_id,
+        message_id=message_id,
+        message="Email tags updated successfully.",
+        tag_keys=tag_keys,
+        tag_details=resolve_tag_options(tag_keys, catalog),
+    )
 
 @app.delete("/accounts/{email_id}", response_model=AccountResponse)
 async def delete_account(email_id: str, request: Request):
@@ -2332,6 +3168,10 @@ async def delete_account(email_id: str, request: Request):
             if email_id in public_shares_data.get("shares", {}):
                 del public_shares_data["shares"][email_id]
                 save_public_shares_data(public_shares_data)
+            email_tags_data = load_email_tags_data()
+            if email_id in email_tags_data.get("emails", {}):
+                del email_tags_data["emails"][email_id]
+                save_email_tags_data(email_tags_data)
             revoke_open_access_sessions(email_id)
             
             return AccountResponse(
@@ -2398,9 +3238,14 @@ async def api_status(request: Request):
             "revoke_api_key": "DELETE /api/api-keys/{key_id}",
             "get_accounts": "GET /accounts",
             "register_account": "POST /accounts",
+            "get_classifications": "GET /classifications",
+            "create_category": "POST /classifications/categories",
+            "create_tag": "POST /classifications/tags",
+            "update_account_classification": "PUT /accounts/{email_id}/classification",
             "get_emails": "GET /emails/{email_id}?refresh=true",
             "get_dual_view_emails": "GET /emails/{email_id}/dual-view",
             "get_email_detail": "GET /emails/{email_id}/{message_id}",
+            "update_email_tags": "PUT /emails/{email_id}/{message_id}/tags",
             "clear_cache": "DELETE /cache/{email_id}",
             "clear_all_cache": "DELETE /cache"
         }
