@@ -43,6 +43,13 @@
             padding-block: 24px;
         }
 
+        body.password-gate-mode .page-shell {
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding-block: 24px;
+        }
+
         button,
         input,
         select {
@@ -596,6 +603,11 @@
             margin: 72px auto 0;
         }
 
+        body.password-gate-mode .gate-card {
+            margin: 0;
+            width: min(100%, 520px);
+        }
+
         .unavailable-card {
             width: min(82vw, 520px);
             aspect-ratio: 1 / 1;
@@ -625,22 +637,26 @@
             display: grid;
             gap: 8px;
             min-height: 110px;
+            justify-items: center;
         }
 
         .turnstile-slot-shell {
-            min-height: 78px;
+            min-height: 72px;
+            width: fit-content;
+            max-width: 100%;
             border-radius: 16px;
             border: 1px dashed rgba(15, 118, 110, 0.28);
             background: rgba(248, 250, 252, 0.92);
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 10px;
+            padding: 6px;
             overflow: hidden;
         }
 
         .turnstile-widget {
-            width: 100%;
+            width: auto;
+            max-width: 100%;
             min-height: 65px;
             display: flex;
             align-items: center;
@@ -1330,6 +1346,7 @@
         }
 
         function showPasswordGate() {
+            document.body.classList.add('password-gate-mode');
             document.body.classList.remove('unavailable-mode');
             document.getElementById('passwordGate').classList.remove('hidden');
             document.getElementById('appView').classList.add('hidden');
@@ -1338,6 +1355,7 @@
         }
 
         function showUnavailable(message) {
+            document.body.classList.remove('password-gate-mode');
             document.body.classList.add('unavailable-mode');
             document.getElementById('unavailableMessage').textContent = message || '这个公开链接当前未开放、已过期，或已被管理员关闭。';
             document.getElementById('unavailableView').classList.remove('hidden');
@@ -1346,6 +1364,7 @@
         }
 
         function showAppView() {
+            document.body.classList.remove('password-gate-mode');
             document.body.classList.remove('unavailable-mode');
             document.getElementById('appView').classList.remove('hidden');
             document.getElementById('passwordGate').classList.add('hidden');
