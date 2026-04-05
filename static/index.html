@@ -1751,6 +1751,7 @@
             gap: 10px;
             flex: 1;
             overflow-y: auto;
+            overflow-x: hidden;
         }
 
         .nav-item {
@@ -1844,6 +1845,7 @@
         .sidebar-toggle .ui-icon {
             width: 32px;
             height: 32px;
+            flex: 0 0 32px;
             margin-right: 0;
             border-radius: 0;
             background: transparent;
@@ -1855,7 +1857,16 @@
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            transition: color 0.18s ease, transform 0.18s ease;
+            transition: color 0.18s ease;
+        }
+
+        .nav-item .icon svg,
+        .sidebar-utility .ui-icon svg,
+        .sidebar-toggle .ui-icon svg {
+            width: 20px;
+            height: 20px;
+            flex: 0 0 20px;
+            transform-origin: center;
         }
 
         .nav-item:hover .icon,
@@ -3936,7 +3947,7 @@
                             <span class="brand-mark">MEM</span>
                         </div>
                         <div class="sidebar-title-stack">
-                            <h1>Microsoft-Email-Manager</h1>
+                            <h1>微软邮箱管理</h1>
                         </div>
                     </div>
                 </div>

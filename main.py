@@ -1580,10 +1580,12 @@ def hosts_match(request_host: str, configured_host: str) -> bool:
 
 
 def is_share_domain_allowed_path(path: str) -> bool:
+    if path in {"/", "/api/public/site-info", "/favicon.ico"}:
+        return True
     return any(
         path == prefix or path.startswith(prefix + "/")
         for prefix in ("/open", "/api/open", "/static", "/icons")
-    ) or path == "/favicon.ico"
+    )
 
 
 def get_request_origin(request: Request) -> str:
@@ -3616,8 +3618,15 @@ async def open_email_page(email_id: str):
     return FileResponse(STATIC_DIR / "open.html")
 
 @app.get("/")
-async def root():
+async def root(request: Request):
     """根路径：未初始化时进入安装页，初始化后显示网站主页"""
+    site_settings = load_site_settings()
+    share_domain = site_settings.get("share_domain", "")
+    share_domain_enabled = bool(site_settings.get("share_domain_enabled")) and bool(share_domain)
+    if share_domain_enabled and hosts_match(get_request_host(request), share_domain):
+        if not auth_is_configured():
+            return PlainTextResponse("Not Found", status_code=404)
+        return FileResponse(STATIC_DIR / "home.html")
     if not auth_is_configured():
         return FileResponse(STATIC_DIR / "index.html")
     return FileResponse(STATIC_DIR / "home.html")
