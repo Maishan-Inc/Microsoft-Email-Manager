@@ -3969,7 +3969,7 @@
                             <p>4. 未经 Maishan Inc. 书面授权，不得将本程序用于收费销售、SaaS 托管、二次打包分发、代运营交付、商业获利、商业引流或其他商业化用途。</p>
                             <p>5. 如需商业化使用、再分发、OEM、白标、企业授权或其他商业合作，必须通过 Maishan Inc. 的商业化方案取得授权后方可进行。</p>
                             <p>6. 若你将本程序暴露在公网环境中，应自行完成 HTTPS、访问控制、最小权限、日志审计、漏洞修复、备份恢复与密钥轮换等安全措施；因部署不当、权限缺失、密钥泄露或违规接入造成的后果，由部署者自行承担。</p>
-                            <p>7. 点击同意并继续，即表示你已阅读、理解并接受以上条款，并确认你有权管理当前部署环境及相关 Outlook 数据。</p>
+                            <p>7. 点击同意并继续，即表示你已阅读、理解并接受以上条款，并确认你有权管理当前部署环境及相关微软邮箱数据。</p>
                         </div>
                         <div id="authAgreementStatus" class="auth-scroll-status">请先滚动到协议底部</div>
                         <div class="auth-actions center full-width">
@@ -4185,7 +4185,7 @@
                         <div class="flex items-center justify-between mb-6">
                             <div>
                                 <h3 class="font-semibold">添加邮箱账户</h3>
-                                <p class="text-sm" style="color: #64748b;">添加单个 Outlook 邮箱账户到系统</p>
+                                <p class="text-sm" style="color: #64748b;">添加单个 微软 邮箱账户到系统</p>
                             </div>
                             <button class="btn btn-secondary btn-sm" onclick="showPage('accounts')">
                                 <span></span>
@@ -4201,14 +4201,14 @@
                                     <option value="graph">Graph API</option>
                                 </select>
                                 <p class="text-xs" id="accountAuthMethodHelp" style="color: #64748b; margin-top: 4px;">
-                                    默认使用 IMAP 读取 Outlook / Hotmail 邮件。
+                                    默认使用 IMAP 读取微软邮箱邮件。
                                 </p>
                             </div>
 
                             <div class="form-group">
                                 <label class="form-label">邮箱地址 *</label>
                                 <input type="email" id="email" class="form-input" placeholder="example@outlook.com" required>
-                                <p class="text-xs" style="color: #64748b; margin-top: 4px;">请输入有效的 Outlook 邮箱地址</p>
+                                <p class="text-xs" style="color: #64748b; margin-top: 4px;">请输入有效的微软邮箱地址</p>
                             </div>
 
                             <div class="form-group">
@@ -4281,7 +4281,7 @@
                         <div class="flex items-center justify-between mb-6">
                             <div>
                                 <h3 class="font-semibold">批量添加邮箱账户</h3>
-                                <p class="text-sm" style="color: #64748b;">一次性导入多个 Outlook 邮箱账户</p>
+                                <p class="text-sm" style="color: #64748b;">一次性导入多个 微软 邮箱账户</p>
                             </div>
                             <button class="btn btn-secondary btn-sm" onclick="showPage('accounts')">
                                 <span></span>
@@ -6749,7 +6749,7 @@ example3@live.com----refresh_token3----client_id3`;
             if (help) {
                 help.textContent = authMethod === 'graph'
                     ? '使用 Microsoft Graph API 读取邮件，适合 Graph 权限令牌。'
-                    : '默认使用 IMAP 读取 Outlook / Hotmail 邮件。';
+                    : '默认使用 IMAP 读取微软邮箱邮件。';
             }
 
             if (steps) {
