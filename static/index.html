@@ -7585,6 +7585,53 @@ example3@outlook.com----refresh_token3----client_id3"></textarea>
             showNotification(msg, 'info');
         }
 
+        function formatApiErrorDetail(detail, status = 0, statusText = '') {
+            if (typeof detail === 'string' && detail.trim()) {
+                return detail;
+            }
+
+            if (Array.isArray(detail) && detail.length) {
+                return detail.map(item => {
+                    if (!item || typeof item !== 'object') {
+                        return String(item);
+                    }
+
+                    const loc = Array.isArray(item.loc) ? item.loc.join('.') : '';
+                    const msg = String(item.msg || item.message || '').trim();
+
+                    if ((item.type === 'less_than_equal' || loc === 'query.page_size') && item.ctx && item.ctx.le) {
+                        return `${loc || 'query'} 不能大于 ${item.ctx.le}`;
+                    }
+
+                    if ((item.type === 'greater_than_equal' || loc === 'query.page_size') && item.ctx && item.ctx.ge) {
+                        return `${loc || 'query'} 不能小于 ${item.ctx.ge}`;
+                    }
+
+                    if (msg && loc) {
+                        return `${loc}: ${msg}`;
+                    }
+
+                    if (msg) {
+                        return msg;
+                    }
+
+                    return JSON.stringify(item);
+                }).join('；');
+            }
+
+            if (detail && typeof detail === 'object') {
+                if (typeof detail.detail === 'string' && detail.detail.trim()) {
+                    return detail.detail;
+                }
+                if (typeof detail.message === 'string' && detail.message.trim()) {
+                    return detail.message;
+                }
+                return JSON.stringify(detail);
+            }
+
+            return status ? `HTTP ${status}${statusText ? `: ${statusText}` : ''}` : '请求失败';
+        }
+
         // API 请求
         async function apiRequest(url, options = {}) {
             try {
@@ -7602,7 +7649,13 @@ example3@outlook.com----refresh_token3----client_id3"></textarea>
                         await initializeAuthFlow(response.status === 401 ? '登录状态已失效，请重新登录' : '请先完成初始化并登录');
                     }
                     const errorData = await response.json().catch(() => ({}));
-                    throw new Error(errorData.detail || `HTTP ${response.status}: ${response.statusText}`);
+                    throw new Error(
+                        formatApiErrorDetail(
+                            Object.prototype.hasOwnProperty.call(errorData, 'detail') ? errorData.detail : errorData,
+                            response.status,
+                            response.statusText
+                        )
+                    );
                 }
 
                 return await response.json();

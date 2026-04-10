@@ -3633,7 +3633,7 @@ async def get_open_email_detail(email_id: str, message_id: str, request: Request
 async def get_accounts(
     request: Request,
     page: int = Query(1, ge=1, description="页码，从1开始"),
-    page_size: int = Query(10, ge=1, le=100, description="每页数量，范围1-100"),
+    page_size: int = Query(10, ge=1, le=500, description="每页数量，范围1-500"),
     email_search: Optional[str] = Query(None, description="邮箱账号模糊搜索"),
     tag_search: Optional[str] = Query(None, description="标签模糊搜索"),
     category_search: Optional[str] = Query(None, description="分类模糊搜索，可匹配中英文名称和 key"),
