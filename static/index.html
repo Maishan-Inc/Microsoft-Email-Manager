@@ -3021,15 +3021,12 @@
         }
 
         .account-filter-layout {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: flex-start;
+            display: grid;
             gap: 12px;
             margin-bottom: 14px;
         }
 
         .account-filter-grid {
-            flex: 1 1 720px;
             display: grid;
             grid-template-columns: minmax(220px, 2fr) repeat(3, minmax(160px, 1fr));
             gap: 12px;
@@ -3043,10 +3040,18 @@
             min-width: 0;
         }
 
+        .account-toolbar-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
         .account-filter-actions {
             display: flex;
             gap: 10px;
-            align-items: stretch;
+            align-items: center;
             flex-wrap: wrap;
         }
 
@@ -3072,11 +3077,12 @@
             align-items: center;
             justify-content: flex-end;
             gap: 14px;
-            padding: 10px 0 0;
+            padding: 0;
             border-radius: 18px;
             border: none;
             background: transparent;
-            margin-bottom: 4px;
+            margin: 0;
+            flex: 1 1 420px;
         }
 
         .account-selection-controls {
@@ -3085,6 +3091,7 @@
             gap: 10px;
             flex-wrap: wrap;
             justify-content: flex-end;
+            width: 100%;
         }
 
         .account-bulk-toggle {
@@ -3711,6 +3718,7 @@
                 grid-template-columns: 1fr;
             }
 
+            .account-toolbar-row,
             .account-filter-actions,
             .account-selection-controls,
             .account-selection-toolbar {
@@ -3721,9 +3729,20 @@
                 align-items: flex-start;
             }
 
+            .account-toolbar-row,
             .account-selection-toolbar {
                 flex-direction: column;
-                align-items: flex-end;
+                align-items: stretch;
+            }
+
+            .account-filter-actions,
+            .account-selection-controls {
+                justify-content: flex-start;
+            }
+
+            .account-bulk-toggle {
+                width: 100%;
+                justify-content: center;
             }
 
             .account-info {
@@ -3808,9 +3827,11 @@
             --auth-setup-panel-height: calc(var(--auth-setup-stage-height) + var(--auth-setup-footer-gap) + var(--auth-setup-footer-height));
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding: 40px 24px;
+            justify-content: flex-start;
+            gap: 18px;
+            padding: 40px 24px 24px;
             position: relative;
             overflow: hidden;
             background:
@@ -3851,6 +3872,7 @@
             grid-template-columns: minmax(0, 1.1fr) minmax(360px, 460px);
             gap: 28px;
             align-items: stretch;
+            margin: auto 0;
         }
 
         .auth-hero,
@@ -4225,6 +4247,10 @@
             box-sizing: border-box;
         }
 
+        .auth-stage-fill > .auth-actions {
+            margin-top: auto;
+        }
+
         .auth-actions.auth-step-split-actions,
         .auth-actions.auth-setup-password-actions {
             margin-top: auto;
@@ -4286,7 +4312,7 @@
         }
 
         .auth-shell:not(.auth-login-mode) .auth-panel {
-            min-height: var(--auth-setup-panel-height);
+            min-height: var(--auth-setup-stage-height);
         }
 
         .auth-panel-header {
@@ -4385,23 +4411,17 @@
 
         #authSetupView {
             width: 100%;
-            min-height: var(--auth-setup-panel-height);
-            height: var(--auth-setup-panel-height);
-            display: grid;
-            grid-template-rows: minmax(0, 1fr) var(--auth-setup-footer-height);
-            gap: var(--auth-setup-footer-gap);
+            min-height: var(--auth-setup-stage-height);
+            height: var(--auth-setup-stage-height);
         }
 
         .auth-setup-footer {
-            margin-top: auto;
-            min-height: var(--auth-setup-footer-height);
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
+            width: min(1080px, 100%);
             text-align: center;
             color: #94a3b8;
             font-size: 0.82rem;
             line-height: 1.7;
+            padding-bottom: 4px;
         }
 
         .auth-mode-grid {
@@ -4733,7 +4753,6 @@
             #authSetupView {
                 min-height: auto;
                 height: auto;
-                grid-template-rows: minmax(0, 1fr) auto;
             }
 
             .auth-stage-fill,
@@ -5104,7 +5123,7 @@
                                             </div>
                                             <span class="auth-mode-badge">适配模式</span>
                                         </div>
-                                        <div class="auth-mode-card-copy">自动预置账户分类 <strong>MREGISTER</strong> 与快捷标签 <strong>已注册CHATGPT</strong>，适合直接对接 MREGISTER 工作流。</div>
+                                        <div class="auth-mode-card-copy">自动预置账户分类 <strong>MREGISTER</strong> 与快捷标签 <strong>已注册CHATGPT</strong>，适合直接对接 MREGISTER。</div>
                                     </button>
                                     <button type="button" class="auth-mode-card" data-setup-mode="normal" onclick="selectSetupMode('normal')">
                                         <div class="auth-mode-card-header">
@@ -5156,7 +5175,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="auth-setup-footer">The final right of interpretation Maishan Inc. Copyright 2026 Microsoft-Email-Manager</div>
                 </div>
 
                 <div id="authLoginView" class="hidden auth-login-view">
@@ -5186,6 +5204,7 @@
                 </div>
             </section>
         </div>
+        <div class="auth-setup-footer">The final right of interpretation Maishan Inc. Copyright 2026 Microsoft-Email-Manager</div>
     </div>
 
     <div id="appShell" class="app-container hidden">
@@ -5323,35 +5342,37 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="account-filter-actions">
-                                    <button class="btn btn-primary" onclick="searchAccounts()">
-                                        <span></span>
-                                        搜索
-                                    </button>
-                                    <button class="btn btn-secondary" onclick="clearSearch()">
-                                        <span></span>
-                                        清空
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="account-selection-toolbar">
-                                <div class="account-selection-controls">
-                                    <button id="accountsDisplaySettingsBtn" class="btn btn-secondary btn-sm" type="button" onclick="openAccountsDisplaySettingsModal()">
-                                        <span></span>
-                                        列表设置
-                                    </button>
-                                    <label class="account-bulk-toggle" for="accountsBulkModeToggle">
-                                        <input type="checkbox" id="accountsBulkModeToggle" onchange="toggleAccountsBulkMode(this.checked)">
-                                        <span>批量管理</span>
-                                    </label>
-                                    <button id="accountsSelectAllBtn" class="btn btn-secondary btn-sm" type="button" onclick="toggleSelectAllFilteredAccounts()">
-                                        <span></span>
-                                        全选
-                                    </button>
-                                    <button id="accountsBatchConfigBtn" class="btn btn-secondary btn-sm" type="button" onclick="openBatchAccountConfigModal()">
-                                        <span></span>
-                                        批量配置
-                                    </button>
+                                <div class="account-toolbar-row">
+                                    <div class="account-filter-actions">
+                                        <button class="btn btn-primary" onclick="searchAccounts()">
+                                            <span></span>
+                                            搜索
+                                        </button>
+                                        <button class="btn btn-secondary" onclick="clearSearch()">
+                                            <span></span>
+                                            清空
+                                        </button>
+                                    </div>
+                                    <div class="account-selection-toolbar">
+                                        <div class="account-selection-controls">
+                                            <button id="accountsDisplaySettingsBtn" class="btn btn-secondary btn-sm" type="button" onclick="openAccountsDisplaySettingsModal()">
+                                                <span></span>
+                                                列表设置
+                                            </button>
+                                            <label class="account-bulk-toggle" for="accountsBulkModeToggle">
+                                                <input type="checkbox" id="accountsBulkModeToggle" onchange="toggleAccountsBulkMode(this.checked)">
+                                                <span>批量管理</span>
+                                            </label>
+                                            <button id="accountsSelectAllBtn" class="btn btn-secondary btn-sm" type="button" onclick="toggleSelectAllFilteredAccounts()">
+                                                <span></span>
+                                                全选
+                                            </button>
+                                            <button id="accountsBatchConfigBtn" class="btn btn-secondary btn-sm" type="button" onclick="openBatchAccountConfigModal()">
+                                                <span></span>
+                                                批量配置
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
