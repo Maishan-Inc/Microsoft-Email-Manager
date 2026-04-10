@@ -3778,6 +3778,18 @@
             gap: 16px;
         }
 
+        .auth-setup-form {
+            flex: 1 1 auto;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .auth-setup-form .auth-error {
+            margin-top: auto;
+        }
+
         .auth-agreement {
             max-height: 220px;
             overflow: auto;
@@ -3904,6 +3916,12 @@
             justify-content: space-between;
         }
 
+        .auth-actions.auth-step-split-actions,
+        .auth-actions.auth-setup-password-actions {
+            margin-top: auto;
+            justify-content: space-between;
+        }
+
         #authSetupSubmit {
             margin-left: auto;
         }
@@ -4002,6 +4020,12 @@
         .auth-stage {
             display: grid;
             gap: 18px;
+        }
+
+        .auth-stage-fill {
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
         .auth-setup-flow {
@@ -4138,7 +4162,9 @@
         }
 
         .auth-agreement-scroll {
-            max-height: 320px;
+            flex: 1 1 auto;
+            min-height: 0;
+            max-height: none;
             overflow: auto;
             padding: 22px 20px;
             border-radius: 22px;
@@ -4611,7 +4637,7 @@
             <section class="auth-panel">
                 <div id="authSetupView">
                     <div id="authSetupFlow" class="auth-setup-flow">
-                        <div id="authSetupAgreementStep" class="auth-stage">
+                        <div id="authSetupAgreementStep" class="auth-stage auth-stage-fill">
                             <div class="auth-stage-header">
                                 <h3>阅读并同意使用协议</h3>
                                 <p>请先把协议完整滑动到底部，随后才能点击同意并继续。</p>
@@ -4632,7 +4658,7 @@
                             </div>
                         </div>
 
-                        <div id="authSetupModeStep" class="auth-stage hidden">
+                        <div id="authSetupModeStep" class="auth-stage auth-stage-fill hidden">
                             <div class="auth-stage-header">
                                 <h3>选择安装模式</h3>
                                 <p>不同模式只影响初始化时是否预置适配分类与标签，后续仍可在后台自行增删调整。</p>
@@ -4670,19 +4696,19 @@
                                 </button>
                             </div>
                             <div class="auth-mode-note">普通模式与 MREGISTER 适配模式的区别，仅在于初始化时是否自动带上这 2 个默认分类配置。</div>
-                            <div class="auth-actions">
+                            <div class="auth-actions auth-step-split-actions">
                                 <button type="button" class="btn btn-secondary" onclick="backToAgreementStep()">返回协议</button>
                                 <button type="button" id="authModeContinue" class="btn btn-primary" onclick="goToSetupPasswordStep()" disabled>确认模式并继续</button>
                             </div>
                         </div>
 
-                        <div id="authSetupPasswordStep" class="auth-stage hidden">
+                        <div id="authSetupPasswordStep" class="auth-stage auth-stage-fill hidden">
                             <div class="auth-stage-header">
                                 <h3>设置管理员账户与后台登录地址</h3>
                                 <p>模式已确认。现在请设置管理员密码，并指定后台登录地址，完成后将直接进入后台。</p>
                             </div>
                             <div class="auth-step-note">管理员密码只会保存为本地哈希值，长度至少 8 位。请妥善保管，后续登录需要使用该密码。</div>
-                            <form id="authSetupForm" class="auth-form">
+                            <form id="authSetupForm" class="auth-form auth-setup-form">
                                 <input type="password" id="authSetupPassword" class="form-input" placeholder="设置管理员密码，至少 8 位" autocomplete="new-password">
                                 <input type="password" id="authSetupPasswordConfirm" class="form-input" placeholder="再次输入管理员密码" autocomplete="new-password">
                                 <input type="text" id="authSetupAdminPath" class="form-input" placeholder="设置管理员后台登录地址，例如 /admin-enter" autocomplete="off">

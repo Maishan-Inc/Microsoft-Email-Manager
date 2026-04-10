@@ -1,5 +1,5 @@
 services:
-  outlook-email-client:
+  microsoft-email-manager-client:
     image: maishanhub/microsoft-email-manager:main
     container_name: microsoft-email-manager
     ports:
@@ -21,10 +21,10 @@ services:
       retries: 3
       start_period: 40s
     networks:
-      - outlook-network
+      - microsoft_email_manager-network
 
 networks:
-  outlook-network:
+  microsoft_email_manager-network:
     driver: bridge
 
 volumes:
